@@ -18,6 +18,7 @@ import { exerciseLibrary } from "../data/exercises";
 import { useWorkoutStore } from "../store/workoutStore";
 
 import { getWorkoutVolume } from "../utils/volume";
+import { saveCurrentWorkout } from "../utils/currentWorkout";
 
 export default function WorkoutPage() {
 
@@ -32,49 +33,57 @@ export default function WorkoutPage() {
     setWorkoutName,
   } = useWorkoutStore();
 
-  const [seconds,setSeconds]=useState(0);
+  useEffect(() => {
+    saveCurrentWorkout(workout);
+  }, [workout]);
 
-  useEffect(()=>{
+  const [now, setNow] = useState(Date.now());
 
-    const timer=setInterval(()=>{
+  useEffect(() => {
 
-      setSeconds(s=>s+1);
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
 
-    },1000);
+    return () => clearInterval(interval);
 
-    return ()=>clearInterval(timer);
+  }, []);
 
-  },[]);
+  const time = useMemo(() => {
 
-  const time=useMemo(()=>{
+    const started = new Date(
+      workout.startedAt,
+    ).getTime();
 
-    const h=Math.floor(seconds/3600);
-
-    const m=Math.floor(seconds%3600/60);
-
-    const s=seconds%60;
-
-    return [h,m,s]
-      .map(v=>String(v).padStart(2,"0"))
-      .join(":");
-
-  },[seconds]);
-
-  function addNextExercise(){
-
-    const remaining=exerciseLibrary.find(
-
-      lib=>
-
-      !workout.exercises.some(
-
-        e=>e.name===lib.name
-
-      )
-
+    const elapsed = Math.max(
+      0,
+      Math.floor((now - started) / 1000),
     );
 
-    if(!remaining){
+    const h = Math.floor(elapsed / 3600);
+
+    const m = Math.floor(
+      (elapsed % 3600) / 60,
+    );
+
+    const s = elapsed % 60;
+
+    return [h, m, s]
+      .map(v => String(v).padStart(2, "0"))
+      .join(":");
+
+  }, [now, workout.startedAt]);
+
+  function addNextExercise() {
+
+    const remaining = exerciseLibrary.find(
+      lib =>
+        !workout.exercises.some(
+          e => e.name === lib.name,
+        ),
+    );
+
+    if (!remaining) {
 
       alert("All exercises added");
 
@@ -86,15 +95,15 @@ export default function WorkoutPage() {
 
       ...remaining,
 
-      id:crypto.randomUUID(),
+      id: crypto.randomUUID(),
 
-      sets:[],
+      sets: [],
 
     });
 
   }
 
-  function finish(){
+  function finish() {
 
     finishWorkout();
 
@@ -102,162 +111,119 @@ export default function WorkoutPage() {
 
   }
 
-  return(
+  return (
 
-<div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-zinc-950 text-white">
 
-<div className="mx-auto max-w-5xl p-5">
+      <div className="mx-auto max-w-5xl p-5">
 
-<div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6">
 
-<button
+          <button
+            onClick={() => navigate("/")}
+            className="rounded-xl bg-zinc-800 p-3"
+          >
+            <ArrowLeft />
+          </button>
 
-onClick={()=>navigate("/")}
+          <Button
+            className="w-auto px-6"
+            onClick={finish}
+          >
+            <CheckCircle2 size={18} />
+            <span className="ml-2">
+              Finish
+            </span>
+          </Button>
 
-className="rounded-xl bg-zinc-800 p-3"
+        </div>
 
->
+        <Card>
 
-<ArrowLeft/>
+          <Input
+            value={workout.name}
+            onChange={e =>
+              setWorkoutName(
+                e.target.value,
+              )
+            }
+          />
 
-</button>
+          <div className="grid grid-cols-3 gap-4 mt-6">
 
-<Button
+            <div>
 
-className="w-auto px-6"
+              <div className="text-zinc-500">
+                Time
+              </div>
 
-onClick={finish}
+              <div className="text-xl font-bold">
+                {time}
+              </div>
 
->
+            </div>
 
-<CheckCircle2 size={18}/>
+            <div>
 
-<span className="ml-2">
+              <div className="text-zinc-500">
+                Exercises
+              </div>
 
-Finish
+              <div className="text-xl font-bold">
+                {workout.exercises.length}
+              </div>
 
-</span>
+            </div>
 
-</Button>
+            <div>
 
-</div>
+              <div className="text-zinc-500">
+                Volume
+              </div>
 
-<Card>
+              <div className="text-xl font-bold">
+                {getWorkoutVolume(
+                  workout.exercises,
+                )} kg
+              </div>
 
-<Input
+            </div>
 
-value={workout.name}
+          </div>
 
-onChange={e=>
+        </Card>
 
-setWorkoutName(
+        <div className="h-6" />
 
-e.target.value
+        {workout.exercises.map(exercise => (
 
-)
+          <ExerciseCard
+            key={exercise.id}
+            exercise={exercise}
+            onChange={updateExercise}
+            onDelete={() =>
+              removeExercise(
+                exercise.id,
+              )
+            }
+          />
 
-}
+        ))}
 
-/>
-
-<div className="grid grid-cols-3 gap-4 mt-6">
-
-<div>
-
-<div className="text-zinc-500">
-
-Time
-
-</div>
-
-<div className="text-xl font-bold">
-
-{time}
-
-</div>
-
-</div>
-
-<div>
-
-<div className="text-zinc-500">
-
-Exercises
-
-</div>
-
-<div className="text-xl font-bold">
-
-{workout.exercises.length}
-
-</div>
-
-</div>
-
-<div>
-
-<div className="text-zinc-500">
-
-Volume
-
-</div>
-
-<div className="text-xl font-bold">
-
-{getWorkoutVolume(
-
-workout.exercises
-
-)} kg
-
-</div>
-
-</div>
-
-</div>
-
-</Card>
-
-<div className="h-6"/>
-
-{workout.exercises.map(exercise=>
-
-<ExerciseCard
-
-key={exercise.id}
-
-exercise={exercise}
-
-onChange={updateExercise}
-
-onDelete={()=>removeExercise(exercise.id)}
-
-/>
-
-)}
-
-<Button
-
-className="mt-5"
-
-onClick={addNextExercise}
-
->
-
-<Plus size={18}/>
-
-<span className="ml-2">
-
-Add Exercise
-
-</span>
-
-</Button>
-
-</div>
-
-</div>
-
-);
+        <Button
+          className="mt-5"
+          onClick={addNextExercise}
+        >
+          <Plus size={18} />
+          <span className="ml-2">
+            Add Exercise
+          </span>
+        </Button>
+
+      </div>
+
+    </div>
+
+  );
 
 }
