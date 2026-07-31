@@ -1,24 +1,32 @@
 import { create } from "zustand";
 
 import type {
-  Exercise,
   Workout,
+  Exercise,
 } from "../types/workout";
 
-import { saveWorkout } from "../utils/storage";
+import {
+  saveWorkout,
+} from "../utils/storage";
 
-function emptyWorkout(): Workout {
-  return {
-    id: crypto.randomUUID(),
-    name: "Push Day",
-    startedAt: Date.now(),
-    finishedAt: null,
-    exercises: [],
-  };
-}
+import {
+  saveCurrentWorkout,
+  clearCurrentWorkout,
+} from "../utils/currentWorkout";
 
-interface WorkoutStore {
+const createWorkout = (): Workout => ({
+  id: crypto.randomUUID(),
+  name: "New Workout",
+  startedAt: new Date().toISOString(),
+  finishedAt: "",
+  exercises: [],
+});
+
+type Store = {
+
   workout: Workout;
+
+  setWorkout(workout: Workout): void;
 
   setWorkoutName(name: string): void;
 
@@ -31,76 +39,151 @@ interface WorkoutStore {
   finishWorkout(): void;
 
   resetWorkout(): void;
-}
+
+};
 
 export const useWorkoutStore =
-create<WorkoutStore>((set, get) => ({
+create<Store>((set, get) => ({
 
-  workout: emptyWorkout(),
+  workout: createWorkout(),
+
+  setWorkout(workout) {
+
+    saveCurrentWorkout(workout);
+
+    set({ workout });
+
+  },
 
   setWorkoutName(name) {
-    set(state => ({
-      workout: {
+
+    set(state => {
+
+      const workout = {
         ...state.workout,
         name,
-      },
-    }));
+      };
+
+      saveCurrentWorkout(workout);
+
+      return {
+        workout,
+      };
+
+    });
+
   },
 
   addExercise(exercise) {
-    set(state => ({
-      workout: {
+
+    set(state => {
+
+      const workout = {
+
         ...state.workout,
+
         exercises: [
+
           ...state.workout.exercises,
+
           exercise,
+
         ],
-      },
-    }));
+
+      };
+
+      saveCurrentWorkout(workout);
+
+      return { workout };
+
+    });
+
   },
 
   updateExercise(exercise) {
-    set(state => ({
-      workout: {
+
+    set(state => {
+
+      const workout = {
+
         ...state.workout,
+
         exercises:
           state.workout.exercises.map(e =>
-            e.id === exercise.id ? exercise : e
+            e.id === exercise.id
+              ? exercise
+              : e
           ),
-      },
-    }));
+
+      };
+
+      saveCurrentWorkout(workout);
+
+      return { workout };
+
+    });
+
   },
 
   removeExercise(id) {
-    set(state => ({
-      workout: {
+
+    set(state => {
+
+      const workout = {
+
         ...state.workout,
+
         exercises:
           state.workout.exercises.filter(
-            e => e.id !== id
+            e => e.id !== id,
           ),
-      },
-    }));
+
+      };
+
+      saveCurrentWorkout(workout);
+
+      return { workout };
+
+    });
+
   },
 
   finishWorkout() {
 
     const workout = {
+
       ...get().workout,
-      finishedAt: Date.now(),
+
+      finishedAt:
+        new Date().toISOString(),
+
     };
 
     saveWorkout(workout);
 
+    clearCurrentWorkout();
+
     set({
-      workout: emptyWorkout(),
+
+      workout: createWorkout(),
+
     });
+
   },
 
   resetWorkout() {
+
+    const workout =
+      createWorkout();
+
+    saveCurrentWorkout(workout);
+
     set({
-      workout: emptyWorkout(),
+
+      workout,
+
     });
+
   },
 
 }));
