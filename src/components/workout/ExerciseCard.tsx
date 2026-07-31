@@ -1,4 +1,4 @@
-import { Copy, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 import type {
   Exercise,
@@ -10,12 +10,11 @@ import Button from "../ui/Button";
 import Badge from "../ui/Badge";
 
 import SetRow from "./SetRow";
+import { useRestTimerStore } from "../../store/restTimerStore";
 
 type Props = {
   exercise: Exercise;
-
   onChange: (exercise: Exercise) => void;
-
   onDelete: () => void;
 };
 
@@ -25,9 +24,11 @@ export default function ExerciseCard({
   onDelete,
 }: Props) {
 
+  const { start } = useRestTimerStore();
+
   function updateSet(
     index: number,
-    values: Partial<WorkoutSet>
+    values: Partial<WorkoutSet>,
   ) {
 
     const updated = [...exercise.sets];
@@ -44,10 +45,25 @@ export default function ExerciseCard({
 
   }
 
+  function completeSet(index: number) {
+
+    const completed = !exercise.sets[index].completed;
+
+    updateSet(index, {
+      completed,
+    });
+    if (completed) {
+      start(90);
+    }
+
+  }
+
   function addSet() {
 
     const previous =
-      exercise.sets[exercise.sets.length - 1];
+      exercise.sets[
+        exercise.sets.length - 1
+      ];
 
     onChange({
 
@@ -58,9 +74,17 @@ export default function ExerciseCard({
         ...exercise.sets,
 
         {
+
           id: crypto.randomUUID(),
-          weight: previous?.weight ?? 0,
-          reps: previous?.reps ?? 0,
+
+          weight:
+            previous?.weight ?? 0,
+
+          reps:
+            previous?.reps ?? 0,
+
+          completed: false,
+
         },
 
       ],
@@ -76,7 +100,7 @@ export default function ExerciseCard({
       ...exercise,
 
       sets: exercise.sets.filter(
-        (_, i) => i !== index
+        (_, i) => i !== index,
       ),
 
     });
@@ -103,43 +127,54 @@ export default function ExerciseCard({
             onClick={onDelete}
             className="rounded-xl bg-red-600 p-2 hover:bg-red-700"
           >
-            <Trash2 size={18}/>
+            <Trash2 size={18} />
           </button>
 
         </div>
 
       </div>
 
-      <div className="grid grid-cols-[55px_1fr_1fr_50px] gap-3 text-xs uppercase tracking-widest text-zinc-500 mb-3">
+      <div className="grid grid-cols-[55px_1fr_1fr_50px_50px] gap-3 text-xs uppercase tracking-widest text-zinc-500 mb-3">
 
         <div>Set</div>
         <div className="text-center">KG</div>
         <div className="text-center">Reps</div>
+        <div className="text-center">✓</div>
         <div></div>
 
       </div>
 
-      {exercise.sets.map((set,index)=>(
+      {exercise.sets.map((set, index) => (
 
         <SetRow
 
           key={set.id}
 
-          setNumber={index+1}
+          setNumber={index + 1}
 
           weight={set.weight}
 
           reps={set.reps}
 
-          onWeightChange={(v)=>
-            updateSet(index,{weight:v})
+          completed={set.completed}
+
+          onWeightChange={(v) =>
+            updateSet(index, {
+              weight: v,
+            })
           }
 
-          onRepsChange={(v)=>
-            updateSet(index,{reps:v})
+          onRepsChange={(v) =>
+            updateSet(index, {
+              reps: v,
+            })
           }
 
-          onDelete={()=>
+          onComplete={() =>
+            completeSet(index)
+          }
+
+          onDelete={() =>
             deleteSet(index)
           }
 
@@ -150,10 +185,13 @@ export default function ExerciseCard({
       <div className="mt-5 flex gap-3">
 
         <Button onClick={addSet}>
-          <Plus size={18}/>
+
+          <Plus size={18} />
+
           <span className="ml-2">
             Add Set
           </span>
+
         </Button>
 
       </div>

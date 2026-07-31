@@ -2,6 +2,7 @@ export interface WorkoutSet {
   id: string;
   weight: number;
   reps: number;
+  completed: boolean;
 }
 
 export interface Exercise {
@@ -13,12 +14,8 @@ export interface Exercise {
 
 export interface Workout {
   id: string;
-
   name: string;
-
-  startedAt: number;
-
-  finishedAt: number | null;
-
+  startedAt: string;
+  finishedAt: string;
   exercises: Exercise[];
 }

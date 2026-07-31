@@ -1,12 +1,14 @@
-import { Trash2 } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 
 type Props = {
   setNumber: number;
   weight: number;
   reps: number;
+  completed: boolean;
 
   onWeightChange: (value: number) => void;
   onRepsChange: (value: number) => void;
+  onComplete: () => void;
   onDelete: () => void;
 };
 
@@ -14,14 +16,24 @@ export default function SetRow({
   setNumber,
   weight,
   reps,
+  completed,
   onWeightChange,
   onRepsChange,
+  onComplete,
   onDelete,
 }: Props) {
-  return (
-    <div className="grid grid-cols-[55px_1fr_1fr_50px] gap-3 items-center mb-3">
 
-      <div className="rounded-xl bg-zinc-800 py-3 text-center font-bold">
+  return (
+
+    <div className="grid grid-cols-[55px_1fr_1fr_50px_50px] gap-3 items-center mb-3">
+
+      <div
+        className={`rounded-xl py-3 text-center font-bold ${
+          completed
+            ? "bg-green-600"
+            : "bg-zinc-800"
+        }`}
+      >
         {setNumber}
       </div>
 
@@ -29,7 +41,9 @@ export default function SetRow({
         type="number"
         value={weight}
         placeholder="kg"
-        onChange={(e) => onWeightChange(Number(e.target.value))}
+        onChange={(e) =>
+          onWeightChange(Number(e.target.value))
+        }
         className="rounded-xl bg-zinc-800 border border-zinc-700 py-3 text-center outline-none focus:border-blue-500"
       />
 
@@ -37,9 +51,22 @@ export default function SetRow({
         type="number"
         value={reps}
         placeholder="reps"
-        onChange={(e) => onRepsChange(Number(e.target.value))}
+        onChange={(e) =>
+          onRepsChange(Number(e.target.value))
+        }
         className="rounded-xl bg-zinc-800 border border-zinc-700 py-3 text-center outline-none focus:border-blue-500"
       />
+
+      <button
+        onClick={onComplete}
+        className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+          completed
+            ? "bg-green-600"
+            : "bg-zinc-700 hover:bg-green-600"
+        }`}
+      >
+        <Check size={18} />
+      </button>
 
       <button
         onClick={onDelete}
@@ -49,5 +76,7 @@ export default function SetRow({
       </button>
 
     </div>
+
   );
+
 }

@@ -18,6 +18,7 @@ import { exerciseLibrary } from "../data/exercises";
 import { useWorkoutStore } from "../store/workoutStore";
 
 import { getWorkoutVolume } from "../utils/volume";
+import RestTimer from "../components/rest/RestTimer";
 
 export default function WorkoutPage() {
 
@@ -187,6 +188,10 @@ export default function WorkoutPage() {
           </div>
 
         </Card>
+
+        <div className="h-6" />
+
+        <RestTimer />
 
         <div className="h-6" />
 
