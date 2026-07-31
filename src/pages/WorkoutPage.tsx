@@ -18,7 +18,6 @@ import { exerciseLibrary } from "../data/exercises";
 import { useWorkoutStore } from "../store/workoutStore";
 
 import { getWorkoutVolume } from "../utils/volume";
-import { saveCurrentWorkout } from "../utils/currentWorkout";
 
 export default function WorkoutPage() {
 
@@ -32,10 +31,6 @@ export default function WorkoutPage() {
     finishWorkout,
     setWorkoutName,
   } = useWorkoutStore();
-
-  useEffect(() => {
-    saveCurrentWorkout(workout);
-  }, [workout]);
 
   const [now, setNow] = useState(Date.now());
 
