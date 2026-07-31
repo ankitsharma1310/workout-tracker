@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { BookmarkPlus, Plus, Trash2 } from "lucide-react";
 
 import type {
   Exercise,
@@ -11,6 +11,7 @@ import Badge from "../ui/Badge";
 
 import SetRow from "./SetRow";
 import { useRestTimerStore } from "../../store/restTimerStore";
+import { useTemplateStore } from "../../store/templateStore";
 
 type Props = {
   exercise: Exercise;
@@ -25,6 +26,8 @@ export default function ExerciseCard({
 }: Props) {
 
   const { start } = useRestTimerStore();
+
+  const { addTemplate } = useTemplateStore();
 
   function updateSet(
     index: number,
@@ -122,6 +125,15 @@ export default function ExerciseCard({
           <Badge>
             {exercise.sets.length} Sets
           </Badge>
+
+          <button
+            onClick={() =>
+              addTemplate(exercise)
+            }
+            className="rounded-xl bg-blue-600 p-2 hover:bg-blue-700"
+          >
+            <BookmarkPlus size={18} />
+          </button>
 
           <button
             onClick={onDelete}

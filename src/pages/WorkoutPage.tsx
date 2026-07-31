@@ -19,6 +19,7 @@ import { useWorkoutStore } from "../store/workoutStore";
 
 import { getWorkoutVolume } from "../utils/volume";
 import RestTimer from "../components/rest/RestTimer";
+import TemplatePanel from "../components/templates/TemplatePanel";
 
 export default function WorkoutPage() {
 
@@ -192,6 +193,12 @@ export default function WorkoutPage() {
         <div className="h-6" />
 
         <RestTimer />
+
+        <div className="h-6" />
+
+        <TemplatePanel
+          onAdd={addExercise}
+        />
 
         <div className="h-6" />
 
