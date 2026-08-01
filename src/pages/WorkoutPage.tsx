@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -19,6 +19,8 @@ import { useWorkoutStore } from "../store/workoutStore";
 
 import { getWorkoutVolume } from "../utils/volume";
 import RestTimer from "../components/rest/RestTimer";
+import { useTimer } from "../hooks/useTimer";
+import RoutinePanel from "../components/routines/RoutinePanel";
 import TemplatePanel from "../components/templates/TemplatePanel";
 
 export default function WorkoutPage() {
@@ -26,25 +28,16 @@ export default function WorkoutPage() {
   const navigate = useNavigate();
 
   const {
-    workout,
-    addExercise,
-    updateExercise,
-    removeExercise,
-    finishWorkout,
-    setWorkoutName,
-  } = useWorkoutStore();
+  workout,
+  setWorkout,
+  addExercise,
+  updateExercise,
+  removeExercise,
+  finishWorkout,
+  setWorkoutName,
+} = useWorkoutStore();
 
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-
-    const interval = setInterval(() => {
-      setNow(Date.now());
-    }, 1000);
-
-    return () => clearInterval(interval);
-
-  }, []);
+  const now = useTimer();
 
   const time = useMemo(() => {
 
@@ -193,6 +186,13 @@ export default function WorkoutPage() {
         <div className="h-6" />
 
         <RestTimer />
+
+        <div className="h-6" />
+
+        <RoutinePanel
+          workout={workout}
+          onStart={setWorkout}
+        />
 
         <div className="h-6" />
 

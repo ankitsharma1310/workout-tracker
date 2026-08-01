@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Pause, Play, SkipForward } from "lucide-react";
 
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 
 import { useRestTimerStore } from "../../store/restTimerStore";
+import { useTimer } from "../../hooks/useTimer";
+import { formatDuration } from "../../utils/time";
 
 export default function RestTimer() {
 
@@ -16,17 +18,7 @@ export default function RestTimer() {
     stop,
   } = useRestTimerStore();
 
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-
-    const id = setInterval(() => {
-      setNow(Date.now());
-    }, 1000);
-
-    return () => clearInterval(id);
-
-  }, []);
+  const now = useTimer();
 
   useEffect(() => {
 
@@ -53,13 +45,7 @@ export default function RestTimer() {
 
   }, [timer, now]);
 
-  const minutes = String(
-    Math.floor(remaining / 60),
-  ).padStart(2, "0");
-
-  const seconds = String(
-    remaining % 60,
-  ).padStart(2, "0");
+  const time = formatDuration(remaining);
 
   return (
 
@@ -74,7 +60,7 @@ export default function RestTimer() {
           </h2>
 
           <div className="mt-2 text-4xl font-bold">
-            {minutes}:{seconds}
+            {time}
           </div>
 
         </div>

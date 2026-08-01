@@ -4,6 +4,7 @@ import Button from "../ui/Button";
 import Card from "../ui/Card";
 
 import type { Exercise } from "../../types/workout";
+import { cloneExercise } from "../../utils/clone";
 import { useTemplateStore } from "../../store/templateStore";
 
 type Props = {
@@ -59,20 +60,7 @@ export default function TemplatePanel({
               <Button
                 className="w-auto px-4"
                 onClick={() =>
-                  onAdd({
-                    ...structuredClone(
-                      template.exercise,
-                    ),
-                    id: crypto.randomUUID(),
-                    sets:
-                      template.exercise.sets.map(
-                        set => ({
-                          ...set,
-                          id: crypto.randomUUID(),
-                          completed: false,
-                        }),
-                      ),
-                  })
+                  onAdd(cloneExercise(template.exercise))
                 }
               >
                 Add
