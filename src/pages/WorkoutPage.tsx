@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -13,15 +13,13 @@ import Input from "../components/ui/Input";
 
 import ExerciseCard from "../components/workout/ExerciseCard";
 
-import { exerciseLibrary } from "../data/exercises";
-
 import { useWorkoutStore } from "../store/workoutStore";
+import { useSettingsStore } from "../store/settingsStore";
 
 import { getWorkoutVolume } from "../utils/volume";
 import RestTimer from "../components/rest/RestTimer";
+import ExercisePicker from "../components/exercise/ExercisePicker";
 import { useTimer } from "../hooks/useTimer";
-import RoutinePanel from "../components/routines/RoutinePanel";
-import TemplatePanel from "../components/templates/TemplatePanel";
 
 export default function WorkoutPage() {
 
@@ -38,6 +36,12 @@ export default function WorkoutPage() {
 } = useWorkoutStore();
 
   const now = useTimer();
+
+  const {
+    settings,
+  } = useSettingsStore();
+
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const time = useMemo(() => {
 
@@ -64,35 +68,6 @@ export default function WorkoutPage() {
 
   }, [now, workout.startedAt]);
 
-  function addNextExercise() {
-
-    const remaining = exerciseLibrary.find(
-      lib =>
-        !workout.exercises.some(
-          e => e.name === lib.name,
-        ),
-    );
-
-    if (!remaining) {
-
-      alert("All exercises added");
-
-      return;
-
-    }
-
-    addExercise({
-
-      ...remaining,
-
-      id: crypto.randomUUID(),
-
-      sets: [],
-
-    });
-
-  }
-
   function finish() {
 
     finishWorkout();
@@ -105,7 +80,7 @@ export default function WorkoutPage() {
 
     <div className="min-h-screen bg-zinc-950 text-white">
 
-      <div className="mx-auto max-w-5xl p-5">
+      <div className="mx-auto max-w-5xl p-5 pb-28">
 
         <div className="flex items-center justify-between mb-6">
 
@@ -174,7 +149,7 @@ export default function WorkoutPage() {
               <div className="text-xl font-bold">
                 {getWorkoutVolume(
                   workout.exercises,
-                )} kg
+                )} {settings.weightUnit}
               </div>
 
             </div>
@@ -189,16 +164,7 @@ export default function WorkoutPage() {
 
         <div className="h-6" />
 
-        <RoutinePanel
-          workout={workout}
-          onStart={setWorkout}
-        />
-
         <div className="h-6" />
-
-        <TemplatePanel
-          onAdd={addExercise}
-        />
 
         <div className="h-6" />
 
@@ -217,15 +183,38 @@ export default function WorkoutPage() {
 
         ))}
 
-        <Button
-          className="mt-5"
-          onClick={addNextExercise}
-        >
-          <Plus size={18} />
-          <span className="ml-2">
-            Add Exercise
-          </span>
-        </Button>
+      </div>
+
+      <ExercisePicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={addExercise}
+      />
+
+      <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-950/95 backdrop-blur">
+
+        <div className="mx-auto flex max-w-5xl gap-3 p-4">
+
+          <Button
+            onClick={() => setPickerOpen(true)}
+          >
+            <Plus size={18}/>
+            <span className="ml-2">
+              Exercise
+            </span>
+          </Button>
+
+          <Button
+            className="bg-green-600 hover:bg-green-700"
+            onClick={finish}
+          >
+            <CheckCircle2 size={18}/>
+            <span className="ml-2">
+              Finish
+            </span>
+          </Button>
+
+        </div>
 
       </div>
 

@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import WorkoutPage from "./pages/WorkoutPage";
 import HistoryPage from "./pages/HistoryPage";
 import WorkoutDetailPage from "./pages/WorkoutDetailPage";
+import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
   return (
@@ -29,6 +30,11 @@ export default function App() {
         <Route
           path="/history/:id"
           element={<WorkoutDetailPage />}
+        />
+
+        <Route
+          path="/settings"
+          element={<SettingsPage />}
         />
 
       </Routes>

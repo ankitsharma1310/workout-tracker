@@ -8,6 +8,7 @@ export interface WorkoutSet {
 export interface Exercise {
   id: string;
   name: string;
+  muscleGroup: string;
   notes?: string;
   sets: WorkoutSet[];
 }

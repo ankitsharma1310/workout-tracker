@@ -1,4 +1,5 @@
 import { Check, Trash2 } from "lucide-react";
+import { useSettingsStore } from "../../store/settingsStore";
 
 type Props = {
   setNumber: number;
@@ -23,6 +24,10 @@ export default function SetRow({
   onDelete,
 }: Props) {
 
+  const {
+    settings,
+  } = useSettingsStore();
+
   return (
 
     <div className="grid grid-cols-[55px_1fr_1fr_50px_50px] gap-3 items-center mb-3">
@@ -40,7 +45,7 @@ export default function SetRow({
       <input
         type="number"
         value={weight}
-        placeholder="kg"
+        placeholder={settings.weightUnit}
         onChange={(e) =>
           onWeightChange(Number(e.target.value))
         }

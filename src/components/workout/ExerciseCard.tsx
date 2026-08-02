@@ -1,4 +1,4 @@
-import { BookmarkPlus, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 import type {
   Exercise,
@@ -11,7 +11,8 @@ import Badge from "../ui/Badge";
 
 import SetRow from "./SetRow";
 import { useRestTimerStore } from "../../store/restTimerStore";
-import { useTemplateStore } from "../../store/templateStore";
+import { useSettingsStore } from "../../store/settingsStore";
+import { getPreviousPerformance } from "../../utils/previousPerformance";
 
 type Props = {
   exercise: Exercise;
@@ -25,9 +26,24 @@ export default function ExerciseCard({
   onDelete,
 }: Props) {
 
+  const previous =
+    getPreviousPerformance(
+      exercise.name,
+    );
+
   const { start } = useRestTimerStore();
 
-  const { addTemplate } = useTemplateStore();
+  const {
+    settings,
+  } = useSettingsStore();
+
+  const completedSets = exercise.sets.filter(
+    set => set.completed,
+  ).length;
+
+  const exerciseCompleted =
+    exercise.sets.length > 0 &&
+    completedSets === exercise.sets.length;
 
   function updateSet(
     index: number,
@@ -55,8 +71,13 @@ export default function ExerciseCard({
     updateSet(index, {
       completed,
     });
-    if (completed) {
-      start(90);
+    if (
+      completed &&
+      settings.autoStartRestTimer
+    ) {
+      start(
+        settings.defaultRestTimer,
+      );
     }
 
   }
@@ -112,28 +133,54 @@ export default function ExerciseCard({
 
   return (
 
-    <Card>
+    <Card
+      className={
+        exerciseCompleted
+          ? "border-2 border-green-500"
+          : ""
+      }
+    >
 
       <div className="flex justify-between items-center mb-5">
 
-        <h2 className="text-2xl font-bold">
-          {exercise.name}
-        </h2>
+        <div>
+
+          <h2 className="flex items-center gap-2 text-2xl font-bold">
+            {exerciseCompleted && (
+              <span className="text-green-400">
+                ✓
+              </span>
+            )}
+            {exercise.name}
+          </h2>
+
+          {previous && previous.sets.length > 0 && (
+            <div className="mt-1 text-sm text-zinc-400">
+              Last workout:{" "}
+              {previous.sets[0].weight}
+              {" "}
+              kg ×{" "}
+              {previous.sets[0].reps}
+            </div>
+          )}
+
+          <p className="text-sm text-zinc-400">
+            {exercise.muscleGroup}
+          </p>
+
+        </div>
 
         <div className="flex gap-2">
 
-          <Badge>
-            {exercise.sets.length} Sets
-          </Badge>
-
-          <button
-            onClick={() =>
-              addTemplate(exercise)
+          <Badge
+            className={
+              exerciseCompleted
+                ? "bg-green-600"
+                : ""
             }
-            className="rounded-xl bg-blue-600 p-2 hover:bg-blue-700"
           >
-            <BookmarkPlus size={18} />
-          </button>
+            {completedSets} / {exercise.sets.length}{" "}Sets
+          </Badge>
 
           <button
             onClick={onDelete}
@@ -149,10 +196,7 @@ export default function ExerciseCard({
       <div className="grid grid-cols-[55px_1fr_1fr_50px_50px] gap-3 text-xs uppercase tracking-widest text-zinc-500 mb-3">
 
         <div>Set</div>
-        <div className="text-center">KG</div>
-        <div className="text-center">Reps</div>
-        <div className="text-center">✓</div>
-        <div></div>
+        <div className="text-center">{settings.weightUnit}</div>
 
       </div>
 

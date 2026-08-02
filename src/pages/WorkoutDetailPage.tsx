@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { getWorkoutHistory } from "../utils/storage";
 import { getWorkoutVolume } from "../utils/volume";
 import { formatDuration } from "../utils/duration";
+import { useSettingsStore } from "../store/settingsStore";
 
 export default function WorkoutDetailPage() {
 
@@ -15,6 +16,10 @@ export default function WorkoutDetailPage() {
   const workout = getWorkoutHistory().find(
     workout => workout.id === id,
   );
+
+  const {
+    settings,
+  } = useSettingsStore();
 
   if (!workout) {
 
@@ -88,7 +93,7 @@ export default function WorkoutDetailPage() {
 
             <div className="text-xl font-bold">
 
-              {getWorkoutVolume(workout.exercises)} kg
+              {getWorkoutVolume(workout.exercises)} {settings.weightUnit}
 
             </div>
 

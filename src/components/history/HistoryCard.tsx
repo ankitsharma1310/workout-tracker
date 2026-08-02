@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import Card from "../ui/Card";
+import { useSettingsStore } from "../../store/settingsStore";
 
 import type { Workout } from "../../types/workout";
 
@@ -16,6 +17,10 @@ export default function HistoryCard({
 }: Props) {
 
   const navigate = useNavigate();
+
+  const {
+    settings,
+  } = useSettingsStore();
 
   return (
 
@@ -50,7 +55,7 @@ export default function HistoryCard({
             </div>
 
             <div className="text-sm text-zinc-400">
-              {getWorkoutVolume(workout.exercises)} kg
+              {getWorkoutVolume(workout.exercises)} {settings.weightUnit}
             </div>
 
           </div>
