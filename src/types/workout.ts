@@ -16,7 +16,7 @@ export interface Exercise {
 export interface Workout {
   id: string;
   name: string;
-  startedAt: string;
-  finishedAt: string;
+  startedAt: number;
+  finishedAt: number | null;
   exercises: Exercise[];
 }

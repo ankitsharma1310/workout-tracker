@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">workout-tracker</string>
+    <string name="title_activity_main">workout-tracker</string>
+    <string name="package_name">com.ankitsharma.workouttracker</string>
+    <string name="custom_url_scheme">com.ankitsharma.workouttracker</string>
+</resources>

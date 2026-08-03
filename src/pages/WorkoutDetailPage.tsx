@@ -76,7 +76,7 @@ export default function WorkoutDetailPage() {
 
               {formatDuration(
                 workout.startedAt,
-                workout.finishedAt,
+                workout.finishedAt ?? workout.startedAt,
               )}
 
             </div>

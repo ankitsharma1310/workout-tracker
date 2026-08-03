@@ -10,9 +10,9 @@ export function cloneWorkout(
 
     id: crypto.randomUUID(),
 
-    startedAt: new Date().toISOString(),
+    startedAt: Date.now(),
 
-    finishedAt: "",
+    finishedAt: null,
 
     exercises: workout.exercises.map(
       exercise => ({

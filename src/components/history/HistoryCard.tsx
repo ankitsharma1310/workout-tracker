@@ -50,7 +50,7 @@ export default function HistoryCard({
             <div className="font-semibold">
               {formatDuration(
                 workout.startedAt,
-                workout.finishedAt,
+                workout.finishedAt ?? workout.startedAt,
               )}
             </div>
 

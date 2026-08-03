@@ -26,9 +26,7 @@ export default function WorkoutPage() {
   const navigate = useNavigate();
 
   const {
-  workout,
-  setWorkout,
-  addExercise,
+  workout,  addExercise,
   updateExercise,
   removeExercise,
   finishWorkout,

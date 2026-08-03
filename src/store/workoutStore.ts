@@ -16,8 +16,8 @@ import {
 const createWorkout = (): Workout => ({
   id: crypto.randomUUID(),
   name: "New Workout",
-  startedAt: new Date().toISOString(),
-  finishedAt: "",
+  startedAt: Date.now(),
+  finishedAt: null,
   exercises: [],
 });
 
@@ -112,7 +112,7 @@ create<Store>((set, get) => ({
   finishWorkout() {
     const workout = {
       ...get().workout,
-      finishedAt: new Date().toISOString(),
+      finishedAt: Date.now(),
     };
 
     saveWorkout(workout);

@@ -1,11 +1,11 @@
 export function formatDuration(
-  startedAt: string,
-  finishedAt: string,
+  startedAt: number,
+  finishedAt: number,
 ) {
 
-  const start = new Date(startedAt).getTime();
+  const start = startedAt;
 
-  const end = new Date(finishedAt).getTime();
+  const end = finishedAt;
 
   const seconds = Math.floor((end - start) / 1000);
 
