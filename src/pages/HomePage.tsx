@@ -1,44 +1,26 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import DashboardHeader from "../components/dashboard/DashboardHeader";
-import DashboardStats from "../components/dashboard/DashboardStats";
-import DashboardActions from "../components/dashboard/DashboardActions";
 import DashboardRecent from "../components/dashboard/DashboardRecent";
+import Page from "../components/layout/Page";
+import Button from "../components/ui/Button";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 import { useWorkoutStore } from "../store/workoutStore";
 import { getCurrentWorkout } from "../utils/currentWorkout";
 import { cloneWorkout } from "../utils/cloneWorkout";
 import { getLastWorkout } from "../utils/repeatWorkout";
-import { getWorkoutHistory } from "../utils/storage";
-import { getWorkoutVolume } from "../utils/volume";
+import { useState } from "react";
 
 export default function HomePage() {
 
   const navigate = useNavigate();
+  const [resumePromptOpen, setResumePromptOpen] =
+    useState(false);
 
   const {
     resetWorkout,
     setWorkout,
   } = useWorkoutStore();
-
-  const workouts = useMemo(
-    () => getWorkoutHistory(),
-    [],
-  );
-
-  const totalVolume = useMemo(
-    () =>
-      workouts.reduce(
-        (sum, workout) =>
-          sum +
-          getWorkoutVolume(
-            workout.exercises,
-          ),
-        0,
-      ),
-    [workouts],
-  );
 
   function startWorkout() {
 
@@ -50,20 +32,8 @@ export default function HomePage() {
       savedWorkout.exercises.length > 0
     ) {
 
-      const resume =
-        window.confirm(
-          "Resume your unfinished workout?",
-        );
-
-      if (resume) {
-
-        setWorkout(savedWorkout);
-
-        navigate("/workout");
-
-        return;
-
-      }
+      setResumePromptOpen(true);
+      return;
 
     }
 
@@ -71,6 +41,23 @@ export default function HomePage() {
 
     navigate("/workout");
 
+  }
+
+  function resumeWorkout() {
+    const savedWorkout = getCurrentWorkout();
+
+    if (savedWorkout) {
+      setWorkout(savedWorkout);
+      navigate("/workout");
+    }
+
+    setResumePromptOpen(false);
+  }
+
+  function startNewWorkout() {
+    setResumePromptOpen(false);
+    resetWorkout();
+    navigate("/workout");
   }
 
   function repeatLastWorkout() {
@@ -91,33 +78,50 @@ export default function HomePage() {
 
   return (
 
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <Page>
 
-      <div className="mx-auto max-w-6xl p-6 space-y-6">
+      <h1 className="text-3xl font-bold">
+        Workout Tracker
+      </h1>
 
-        <DashboardHeader />
+      <p className="mt-1 text-zinc-400">
+        Ready to train?
+      </p>
 
-        <DashboardStats
-          workouts={workouts.length}
-          volume={totalVolume}
-          streak={0}
-        />
+      <Button
+        className="mt-8 h-14 w-full text-lg"
+        onClick={startWorkout}
+      >
+        ▶ Start Workout
+      </Button>
 
-        <DashboardActions
-          onWorkout={startWorkout}
-          onRepeat={repeatLastWorkout}
-          onHistory={() =>
-            navigate("/history")
-          }
-          onSettings={() =>
-            navigate("/settings")
-          }
-        />
+      <Button
+        className="mt-3 h-14 w-full bg-zinc-800"
+        onClick={repeatLastWorkout}
+      >
+        🔁 Repeat Last Workout
+      </Button>
+
+      <div className="mt-8">
+
+        <h2 className="mb-4 text-xl font-semibold">
+          Recent Workouts
+        </h2>
+
         <DashboardRecent />
 
       </div>
 
-    </div>
+      <ConfirmDialog
+        open={resumePromptOpen}
+        title="Resume workout?"
+        message="You have an unfinished workout saved."
+        confirmLabel="Resume"
+        onConfirm={resumeWorkout}
+        onCancel={startNewWorkout}
+      />
+
+    </Page>
 
   );
 

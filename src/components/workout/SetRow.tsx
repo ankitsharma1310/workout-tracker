@@ -23,19 +23,18 @@ export default function SetRow({
   onComplete,
   onDelete,
 }: Props) {
-
-  const {
-    settings,
-  } = useSettingsStore();
+  const { settings } = useSettingsStore();
 
   return (
-
-    <div className="grid grid-cols-[55px_1fr_1fr_50px_50px] gap-3 items-center mb-3">
-
+    <div
+      className={`mb-2 grid grid-cols-[40px_1fr_1fr_48px_48px] items-center gap-2 rounded-xl transition-all ${
+        completed ? "opacity-70" : ""
+      }`}
+    >
       <div
-        className={`rounded-xl py-3 text-center font-bold ${
+        className={`flex h-12 items-center justify-center rounded-xl font-semibold ${
           completed
-            ? "bg-green-600"
+            ? "bg-green-600 text-white"
             : "bg-zinc-800"
         }`}
       >
@@ -44,44 +43,45 @@ export default function SetRow({
 
       <input
         type="number"
+        inputMode="decimal"
         value={weight}
         placeholder={settings.weightUnit}
+        onFocus={(e) => e.target.select()}
         onChange={(e) =>
           onWeightChange(Number(e.target.value))
         }
-        className="rounded-xl bg-zinc-800 border border-zinc-700 py-3 text-center outline-none focus:border-blue-500"
+        className="h-12 rounded-xl border border-zinc-700 bg-zinc-800 text-center text-lg font-semibold outline-none transition focus:border-blue-500"
       />
 
       <input
         type="number"
+        inputMode="numeric"
         value={reps}
-        placeholder="reps"
+        placeholder="Reps"
+        onFocus={(e) => e.target.select()}
         onChange={(e) =>
           onRepsChange(Number(e.target.value))
         }
-        className="rounded-xl bg-zinc-800 border border-zinc-700 py-3 text-center outline-none focus:border-blue-500"
+        className="h-12 rounded-xl border border-zinc-700 bg-zinc-800 text-center text-lg font-semibold outline-none transition focus:border-blue-500"
       />
 
       <button
         onClick={onComplete}
-        className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+        className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
           completed
             ? "bg-green-600"
-            : "bg-zinc-700 hover:bg-green-600"
+            : "bg-zinc-700 active:scale-95"
         }`}
       >
-        <Check size={18} />
+        <Check size={20} />
       </button>
 
       <button
         onClick={onDelete}
-        className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600 hover:bg-red-700"
+        className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600 transition active:scale-95"
       >
-        <Trash2 size={18} />
+        <Trash2 size={20} />
       </button>
-
     </div>
-
   );
-
 }

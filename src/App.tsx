@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import WorkoutPage from "./pages/WorkoutPage";
 import HistoryPage from "./pages/HistoryPage";
 import WorkoutDetailPage from "./pages/WorkoutDetailPage";
+import WorkoutCompletePage from "./pages/WorkoutCompletePage";
 import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
@@ -20,6 +21,11 @@ export default function App() {
         <Route
           path="/workout"
           element={<WorkoutPage />}
+        />
+
+        <Route
+          path="/workout-complete"
+          element={<WorkoutCompletePage />}
         />
 
         <Route

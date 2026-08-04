@@ -13,6 +13,7 @@ import SetRow from "./SetRow";
 import { useRestTimerStore } from "../../store/restTimerStore";
 import { useSettingsStore } from "../../store/settingsStore";
 import { getPreviousPerformance } from "../../utils/previousPerformance";
+import { lightHaptic } from "../../utils/haptics";
 
 type Props = {
   exercise: Exercise;
@@ -71,6 +72,9 @@ export default function ExerciseCard({
     updateSet(index, {
       completed,
     });
+    if (completed) {
+      void lightHaptic();
+    }
     if (
       completed &&
       settings.autoStartRestTimer
@@ -134,18 +138,18 @@ export default function ExerciseCard({
   return (
 
     <Card
-      className={
+      className={`!p-4 ${
         exerciseCompleted
           ? "border-2 border-green-500"
           : ""
-      }
+      }`}
     >
 
-      <div className="flex justify-between items-center mb-5">
+      <div className="mb-3 flex items-start justify-between">
 
         <div>
 
-          <h2 className="flex items-center gap-2 text-2xl font-bold">
+          <h2 className="flex items-center gap-2 text-xl font-semibold">
             {exerciseCompleted && (
               <span className="text-green-400">
                 ✓
@@ -156,15 +160,14 @@ export default function ExerciseCard({
 
           {previous && previous.sets.length > 0 && (
             <div className="mt-1 text-sm text-zinc-400">
-              Last workout:{" "}
+              Last • {" "}
               {previous.sets[0].weight}
-              {" "}
-              kg ×{" "}
+              {" "}×{" "}
               {previous.sets[0].reps}
             </div>
           )}
 
-          <p className="text-sm text-zinc-400">
+          <p className="text-xs text-zinc-500">
             {exercise.muscleGroup}
           </p>
 
@@ -173,13 +176,13 @@ export default function ExerciseCard({
         <div className="flex gap-2">
 
           <Badge
-            className={
+            className={`text-xs ${
               exerciseCompleted
                 ? "bg-green-600"
                 : ""
-            }
+            }`}
           >
-            {completedSets} / {exercise.sets.length}{" "}Sets
+            {completedSets}/{exercise.sets.length}
           </Badge>
 
           <button
@@ -193,10 +196,17 @@ export default function ExerciseCard({
 
       </div>
 
-      <div className="grid grid-cols-[55px_1fr_1fr_50px_50px] gap-3 text-xs uppercase tracking-widest text-zinc-500 mb-3">
+      <div className="mb-2 grid grid-cols-[40px_1fr_1fr_48px_48px] gap-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
 
         <div>Set</div>
-        <div className="text-center">{settings.weightUnit}</div>
+        <div className="text-center">
+          {settings.weightUnit}
+        </div>
+        <div className="text-center">
+          Reps
+        </div>
+        <div></div>
+        <div></div>
 
       </div>
 
@@ -238,9 +248,12 @@ export default function ExerciseCard({
 
       ))}
 
-      <div className="mt-5 flex gap-3">
+      <div className="mt-3">
 
-        <Button onClick={addSet}>
+        <Button
+          className="h-11 w-full"
+          onClick={addSet}
+        >
 
           <Plus size={18} />
 

@@ -24,6 +24,11 @@ const createWorkout = (): Workout => ({
 const initialWorkout =
   getCurrentWorkout() ?? createWorkout();
 
+function persistWorkout(workout: Workout) {
+  saveCurrentWorkout(workout);
+  return { workout };
+}
+
 type Store = {
   workout: Workout;
 
@@ -32,7 +37,7 @@ type Store = {
   addExercise(exercise: Exercise): void;
   updateExercise(exercise: Exercise): void;
   removeExercise(id: string): void;
-  finishWorkout(): void;
+  finishWorkout(): Workout;
   resetWorkout(): void;
 };
 
@@ -42,8 +47,7 @@ create<Store>((set, get) => ({
   workout: initialWorkout,
 
   setWorkout(workout) {
-    saveCurrentWorkout(workout);
-    set({ workout });
+    set(persistWorkout(workout));
   },
 
   setWorkoutName(name) {
@@ -53,9 +57,7 @@ create<Store>((set, get) => ({
         name,
       };
 
-      saveCurrentWorkout(workout);
-
-      return { workout };
+      return persistWorkout(workout);
     });
   },
 
@@ -69,9 +71,7 @@ create<Store>((set, get) => ({
         ],
       };
 
-      saveCurrentWorkout(workout);
-
-      return { workout };
+      return persistWorkout(workout);
     });
   },
 
@@ -87,9 +87,7 @@ create<Store>((set, get) => ({
           ),
       };
 
-      saveCurrentWorkout(workout);
-
-      return { workout };
+      return persistWorkout(workout);
     });
   },
 
@@ -103,9 +101,7 @@ create<Store>((set, get) => ({
           ),
       };
 
-      saveCurrentWorkout(workout);
-
-      return { workout };
+      return persistWorkout(workout);
     });
   },
 
@@ -119,19 +115,15 @@ create<Store>((set, get) => ({
 
     clearCurrentWorkout();
 
-    set({
-      workout: createWorkout(),
-    });
+    set({ workout });
+
+    return workout;
   },
 
   resetWorkout() {
     const workout = createWorkout();
 
-    saveCurrentWorkout(workout);
-
-    set({
-      workout,
-    });
+    set(persistWorkout(workout));
   },
 
 }));
