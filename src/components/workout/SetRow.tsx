@@ -27,16 +27,21 @@ export default function SetRow({
 
   return (
     <div
-      className={`mb-2 grid grid-cols-[40px_1fr_1fr_48px_48px] items-center gap-2 rounded-xl transition-all ${
-        completed ? "opacity-70" : ""
-      }`}
+      className={[
+        "grid grid-cols-[40px_minmax(0,1fr)_minmax(0,1fr)_44px_44px]",
+        "items-center gap-2 py-1",
+        "transition-opacity",
+        completed ? "opacity-60" : "",
+      ].join(" ")}
     >
       <div
-        className={`flex h-12 items-center justify-center rounded-xl font-semibold ${
+        className={[
+          "flex h-12 items-center justify-center rounded-xl",
+          "text-sm font-semibold",
           completed
             ? "bg-green-600 text-white"
-            : "bg-zinc-800"
-        }`}
+            : "bg-zinc-800 text-zinc-100",
+        ].join(" ")}
       >
         {setNumber}
       </div>
@@ -44,43 +49,59 @@ export default function SetRow({
       <input
         type="number"
         inputMode="decimal"
+        enterKeyHint="next"
         value={weight}
         placeholder={settings.weightUnit}
-        onFocus={(e) => e.target.select()}
-        onChange={(e) =>
-          onWeightChange(Number(e.target.value))
+        onFocus={e => e.target.select()}
+        onChange={e =>
+          onWeightChange(
+            Number(e.target.value),
+          )
         }
-        className="h-12 rounded-xl border border-zinc-700 bg-zinc-800 text-center text-lg font-semibold outline-none transition focus:border-blue-500"
+        className="h-12 w-full min-w-0 rounded-xl border border-zinc-700 bg-zinc-800 px-2 text-center text-base font-semibold outline-none focus:border-blue-500"
       />
 
       <input
         type="number"
         inputMode="numeric"
+        enterKeyHint="done"
         value={reps}
         placeholder="Reps"
-        onFocus={(e) => e.target.select()}
-        onChange={(e) =>
-          onRepsChange(Number(e.target.value))
+        onFocus={e => e.target.select()}
+        onChange={e =>
+          onRepsChange(
+            Number(e.target.value),
+          )
         }
-        className="h-12 rounded-xl border border-zinc-700 bg-zinc-800 text-center text-lg font-semibold outline-none transition focus:border-blue-500"
+        className="h-12 w-full min-w-0 rounded-xl border border-zinc-700 bg-zinc-800 px-2 text-center text-base font-semibold outline-none focus:border-blue-500"
       />
 
       <button
+        type="button"
         onClick={onComplete}
-        className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
+        aria-label={
+          completed
+            ? "Mark set incomplete"
+            : "Complete set"
+        }
+        className={[
+          "flex h-11 w-11 items-center justify-center rounded-xl",
+          "transition active:scale-95",
           completed
             ? "bg-green-600"
-            : "bg-zinc-700 active:scale-95"
-        }`}
+            : "bg-zinc-800 active:bg-green-600",
+        ].join(" ")}
       >
-        <Check size={20} />
+        <Check size={19} />
       </button>
 
       <button
+        type="button"
         onClick={onDelete}
-        className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600 transition active:scale-95"
+        aria-label="Delete set"
+        className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-800 text-red-400 transition active:scale-95"
       >
-        <Trash2 size={20} />
+        <Trash2 size={18} />
       </button>
     </div>
   );

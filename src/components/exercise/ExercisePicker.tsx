@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { Star } from "lucide-react";
-
-import Button from "../ui/Button";
-import Input from "../ui/Input";
+import {
+  Search,
+  Star,
+  X,
+} from "lucide-react";
 
 import type { Exercise } from "../../types/workout";
 import { exerciseLibrary } from "../../data/exercises";
@@ -20,237 +21,233 @@ export default function ExercisePicker({
   onClose,
   onSelect,
 }: Props) {
+  const [search, setSearch] =
+    useState("");
 
-  const [search, setSearch] = useState("");
+  const {
+    favorites,
+    toggle,
+  } =
+    useFavoriteExerciseStore();
 
-  const {    toggle,
-    isFavorite,
-  } = useFavoriteExerciseStore();
-
-  const filtered = useMemo(() => {
-
-    return exerciseLibrary.filter(exercise =>
-      exercise.name
-        .toLowerCase()
-        .includes(search.toLowerCase()),
+  const filtered =
+    useMemo(
+      () =>
+        exerciseLibrary.filter(
+          exercise =>
+            exercise.name
+              .toLowerCase()
+              .includes(
+                search.toLowerCase(),
+              ),
+        ),
+      [search],
     );
 
-  }, [search]);
-
-  const favoritesList =
+  const favoriteItems =
     filtered.filter(exercise =>
-      isFavorite(exercise.name),
+      favorites.includes(
+        exercise.name,
+      ),
     );
 
-  const grouped = useMemo(() => {
+  const grouped =
+    useMemo(() => {
+      const groups: Record<
+        string,
+        typeof filtered
+      > = {};
 
-    const groups: Record<string, typeof filtered> = {};
+      filtered
+        .filter(
+          exercise =>
+            !favorites.includes(
+              exercise.name,
+            ),
+        )
+        .forEach(exercise => {
+          if (
+            !groups[
+              exercise.muscleGroup
+            ]
+          ) {
+            groups[
+              exercise.muscleGroup
+            ] = [];
+          }
 
-    filtered
-      .filter(
-        exercise =>
-          !isFavorite(exercise.name),
-      )
-      .forEach(exercise => {
+          groups[
+            exercise.muscleGroup
+          ].push(exercise);
+        });
 
-        if (!groups[exercise.muscleGroup]) {
-          groups[exercise.muscleGroup] = [];
-        }
+      return groups;
+    }, [filtered, favorites]);
 
-        groups[exercise.muscleGroup].push(exercise);
+  function select(
+    exercise: (typeof exerciseLibrary)[number],
+  ) {
+    onSelect({
+      id: crypto.randomUUID(),
+      name: exercise.name,
+      muscleGroup:
+        exercise.muscleGroup,
+      sets: [],
+    });
 
-      });
-
-    return groups;
-
-  }, [filtered, isFavorite]);
-
-  if (!open) {
-    return null;
+    onClose();
+    setSearch("");
   }
 
-  return (
+  if (!open) return null;
 
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-6">
+  const renderExercise = (
+    exercise: (typeof exerciseLibrary)[number],
+  ) => (
+    <div
+      key={exercise.name}
+      className="flex items-center gap-2"
+    >
+      <button
+        type="button"
+        onClick={() =>
+          toggle(exercise.name)
+        }
+        aria-label={
+          favorites.includes(
+            exercise.name,
+          )
+            ? `Remove ${exercise.name} from favorites`
+            : `Favorite ${exercise.name}`
+        }
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-zinc-500 active:scale-95"
+      >
+        <Star
+          size={18}
+          className={
+            favorites.includes(
+              exercise.name,
+            )
+              ? "fill-yellow-400 text-yellow-400"
+              : ""
+          }
+        />
+      </button>
 
-      <div className="h-full w-full bg-zinc-950 p-6 overflow-hidden flex flex-col rounded-none">
-
-        <div className="mb-5 flex items-center justify-between">
-
-          <h2 className="text-2xl font-bold">
-            Add Exercise
-          </h2>
-
-          <Button
-            className="w-auto bg-red-600 hover:bg-red-700"
-            onClick={onClose}
-          >
-            Close
-          </Button>
-
+      <button
+        type="button"
+        onClick={() =>
+          select(exercise)
+        }
+        className="min-w-0 flex-1 rounded-xl bg-zinc-900 px-4 py-3 text-left active:bg-zinc-800"
+      >
+        <div className="font-medium">
+          {exercise.name}
         </div>
 
-        <div className="sticky top-0 z-20 bg-zinc-950 pb-4">
-
-          <Input
-            placeholder="🔍 Search exercise..."
-            value={search}
-            onChange={e =>
-              setSearch(e.target.value)
-            }
-          />
-
+        <div className="mt-1 text-xs text-zinc-500">
+          {exercise.equipment}
         </div>
-
-        <div className="mt-5 flex-1 overflow-y-auto pr-2">
-
-  {favoritesList.length > 0 && (
-
-    <div className="mb-6">
-
-      <h3 className="sticky top-0 z-10 mb-2 bg-zinc-900 py-2 text-lg font-bold text-yellow-400">
-        ⭐ Favorites
-      </h3>
-
-      <div className="space-y-2">
-
-        {favoritesList.map(exercise => (
-
-          <Button
-            key={exercise.name}
-            className="justify-between bg-yellow-900/30 hover:bg-yellow-800"
-            onClick={() => {
-
-              onSelect({
-                id: crypto.randomUUID(),
-                name: exercise.name,
-                muscleGroup: exercise.muscleGroup,
-                sets: [],
-              });
-
-              onClose();
-
-            }}
-          >
-
-            <div className="flex w-full items-center justify-between">
-
-              <span>
-                {exercise.name}
-              </span>
-
-              <span className="text-xs text-zinc-400">
-                {exercise.equipment}
-              </span>
-
-            </div>
-
-          </Button>
-
-        ))}
-
-      </div>
-
+      </button>
     </div>
+  );
 
-  )}
-
-  {Object.entries(grouped).map(
-    ([group, exercises]) => (
-
-      <div
-        key={group}
-                className="mb-5"
-              >
-
-                <h3 className="sticky top-0 z-10 mb-2 bg-zinc-900 py-2 text-lg font-bold text-blue-400">
-                  {muscleIcons[group]} {group}
-                </h3>
-
-                <div className="space-y-2">
-
-                  {exercises.map(exercise => (
-
-                    <Button
-                      key={exercise.name}
-                      className="justify-between bg-zinc-800 hover:bg-blue-700 transition-all"
-                      onClick={() => {
-
-                        onSelect({
-                          id: crypto.randomUUID(),
-                          name: exercise.name,
-                          muscleGroup: exercise.muscleGroup,
-                          sets: [],
-                        });
-
-                        onClose();
-
-                      }}
-                    >
-
-                      <div className="flex w-full items-center justify-between">
-
-                        <div className="flex items-center gap-3">
-
-                          <button
-                            type="button"
-                            onClick={(e) => {
-
-                              e.stopPropagation();
-
-                              toggle(exercise.name);
-
-                            }}
-                          >
-
-                            <Star
-                              size={18}
-                              className={
-                                isFavorite(exercise.name)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-zinc-500"
-                              }
-                            />
-
-                          </button>
-
-                          <div>
-
-                            <div>
-                              {exercise.name}
-                            </div>
-
-                            <div className="text-xs text-zinc-500">
-                              {exercise.equipment}
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                        <span className="text-xs text-zinc-400">
-                          {exercise.muscleGroup}
-                        </span>
-
-                      </div>
-
-                    </Button>
-
-                  ))}
-
-                </div>
-
+  return (
+    <div className="fixed inset-0 z-50 bg-zinc-950 text-white">
+      <div className="flex min-h-dvh flex-col pt-[max(env(safe-area-inset-top),16px)]">
+        <div className="border-b border-zinc-800 px-4 pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs uppercase tracking-wider text-blue-400">
+                Exercise Library
               </div>
 
+              <h2 className="mt-1 text-2xl font-bold">
+                Add Exercise
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close exercise picker"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-800 active:scale-95"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="relative mt-4">
+            <Search
+              size={19}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+            />
+
+            <input
+              autoFocus
+              type="search"
+              value={search}
+              onChange={e =>
+                setSearch(e.target.value)
+              }
+              placeholder="Search exercises..."
+              className="h-12 w-full rounded-xl border border-zinc-800 bg-zinc-900 pl-11 pr-4 outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 pb-[max(env(safe-area-inset-bottom),24px)] pt-5">
+          {favoriteItems.length > 0 && (
+            <section className="mb-7">
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-400">
+                <Star size={16} className="fill-yellow-400" />
+                Favorites
+              </div>
+
+              <div className="space-y-2">
+                {favoriteItems.map(
+                  renderExercise,
+                )}
+              </div>
+            </section>
+          )}
+
+          {Object.entries(grouped).map(
+            ([group, exercises]) => (
+              <section
+                key={group}
+                className="mb-7"
+              >
+                <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-zinc-200">
+                  <span>
+                    {muscleIcons[group] ??
+                      "•"}
+                  </span>
+                  <span>{group}</span>
+                </div>
+
+                <div className="space-y-2">
+                  {exercises.map(
+                    renderExercise,
+                  )}
+                </div>
+              </section>
             ),
           )}
 
+          {filtered.length === 0 && (
+            <div className="py-16 text-center">
+              <div className="text-lg font-semibold">
+                No exercises found
+              </div>
+
+              <div className="mt-1 text-sm text-zinc-500">
+                Try a different search.
+              </div>
+            </div>
+          )}
         </div>
-
       </div>
-
     </div>
-
   );
-
 }

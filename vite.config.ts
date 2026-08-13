@@ -11,38 +11,24 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
 
-      includeAssets: [
-        "favicon.ico",
-        "apple-touch-icon.png",
-      ],
+      workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+      },
 
       manifest: {
+        id: "/",
         name: "Workout Tracker",
         short_name: "Workout",
-        description: "Personal Workout Tracker",
+        description:
+          "Personal workout tracker",
         theme_color: "#09090b",
         background_color: "#09090b",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
-
-        icons: [
-          {
-            src: "icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "apple-touch-icon.png",
-            sizes: "180x180",
-            type: "image/png",
-          },
-        ],
+        scope: "/",
       },
     }),
   ],
