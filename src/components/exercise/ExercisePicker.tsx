@@ -16,73 +16,89 @@ type Props = {
   onSelect(exercise: Exercise): void;
 };
 
+const muscleGroups = [
+  "All",
+  "Chest",
+  "Back",
+  "Shoulders",
+  "Biceps",
+  "Triceps",
+  "Forearms",
+  "Legs",
+  "Glutes",
+  "Core",
+  "Cardio",
+];
+
 export default function ExercisePicker({
   open,
   onClose,
   onSelect,
 }: Props) {
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
+  const [selectedGroup, setSelectedGroup] =
+    useState("All");
 
   const {
     favorites,
     toggle,
-  } =
-    useFavoriteExerciseStore();
+  } = useFavoriteExerciseStore();
 
-  const filtered =
-    useMemo(
-      () =>
-        exerciseLibrary.filter(
-          exercise =>
-            exercise.name
-              .toLowerCase()
-              .includes(
-                search.toLowerCase(),
-              ),
-        ),
-      [search],
-    );
+  const searchTerm = search.trim().toLowerCase();
 
-  const favoriteItems =
-    filtered.filter(exercise =>
-      favorites.includes(
-        exercise.name,
+  const filtered = useMemo(() => {
+    return exerciseLibrary.filter(exercise => {
+      const matchesGroup =
+        selectedGroup === "All" ||
+        exercise.muscleGroup === selectedGroup;
+
+      const matchesSearch =
+        !searchTerm ||
+        exercise.name
+          .toLowerCase()
+          .includes(searchTerm) ||
+        exercise.equipment
+          .toLowerCase()
+          .includes(searchTerm) ||
+        exercise.muscleGroup
+          .toLowerCase()
+          .includes(searchTerm);
+
+      return matchesGroup && matchesSearch;
+    });
+  }, [selectedGroup, searchTerm]);
+
+  const favoriteItems = useMemo(
+    () =>
+      filtered.filter(exercise =>
+        favorites.includes(exercise.name),
       ),
-    );
+    [filtered, favorites],
+  );
 
-  const grouped =
-    useMemo(() => {
-      const groups: Record<
-        string,
-        typeof filtered
-      > = {};
+  const grouped = useMemo(() => {
+    const groups: Record<
+      string,
+      typeof filtered
+    > = {};
 
-      filtered
-        .filter(
-          exercise =>
-            !favorites.includes(
-              exercise.name,
-            ),
-        )
-        .forEach(exercise => {
-          if (
-            !groups[
-              exercise.muscleGroup
-            ]
-          ) {
-            groups[
-              exercise.muscleGroup
-            ] = [];
-          }
+    filtered
+      .filter(
+        exercise =>
+          !favorites.includes(exercise.name),
+      )
+      .forEach(exercise => {
+        if (!groups[exercise.muscleGroup]) {
+          groups[exercise.muscleGroup] = [];
+        }
 
-          groups[
-            exercise.muscleGroup
-          ].push(exercise);
-        });
+        groups[exercise.muscleGroup].push(
+          exercise,
+        );
+      });
 
-      return groups;
-    }, [filtered, favorites]);
+    return groups;
+  }, [filtered, favorites]);
 
   function select(
     exercise: (typeof exerciseLibrary)[number],
@@ -90,94 +106,128 @@ export default function ExercisePicker({
     onSelect({
       id: crypto.randomUUID(),
       name: exercise.name,
-      muscleGroup:
-        exercise.muscleGroup,
+      muscleGroup: exercise.muscleGroup,
       sets: [],
     });
 
     onClose();
     setSearch("");
+    setSelectedGroup("All");
+  }
+
+  function handleClose() {
+    onClose();
+    setSearch("");
+    setSelectedGroup("All");
   }
 
   if (!open) return null;
 
   const renderExercise = (
     exercise: (typeof exerciseLibrary)[number],
-  ) => (
-    <div
-      key={exercise.name}
-      className="flex items-center gap-2"
-    >
-      <button
-        type="button"
-        onClick={() =>
-          toggle(exercise.name)
-        }
-        aria-label={
-          favorites.includes(
-            exercise.name,
-          )
-            ? `Remove ${exercise.name} from favorites`
-            : `Favorite ${exercise.name}`
-        }
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-zinc-500 active:scale-95"
+  ) => {
+    const isFavorite = favorites.includes(
+      exercise.name,
+    );
+
+    return (
+      <div
+        key={exercise.name}
+        className="flex items-center gap-2"
       >
-        <Star
-          size={18}
-          className={
-            favorites.includes(
-              exercise.name,
-            )
-              ? "fill-yellow-400 text-yellow-400"
-              : ""
+        <button
+          type="button"
+          onClick={() =>
+            toggle(exercise.name)
           }
-        />
-      </button>
+          aria-label={
+            isFavorite
+              ? `Remove ${exercise.name} from favorites`
+              : `Favorite ${exercise.name}`
+          }
+          className={[
+            "flex h-11 w-11 shrink-0",
+            "items-center justify-center",
+            "rounded-xl bg-zinc-900",
+            "text-zinc-500",
+            "active:scale-95",
+          ].join(" ")}
+        >
+          <Star
+            size={18}
+            className={
+              isFavorite
+                ? "fill-yellow-400 text-yellow-400"
+                : ""
+            }
+          />
+        </button>
 
-      <button
-        type="button"
-        onClick={() =>
-          select(exercise)
-        }
-        className="min-w-0 flex-1 rounded-xl bg-zinc-900 px-4 py-3 text-left active:bg-zinc-800"
-      >
-        <div className="font-medium">
-          {exercise.name}
-        </div>
+        <button
+          type="button"
+          onClick={() =>
+            select(exercise)
+          }
+          className={[
+            "min-w-0 flex-1",
+            "rounded-xl bg-zinc-900",
+            "px-4 py-3",
+            "text-left",
+            "active:bg-zinc-800",
+          ].join(" ")}
+        >
+          <div className="truncate text-[15px] font-medium">
+            {exercise.name}
+          </div>
 
-        <div className="mt-1 text-xs text-zinc-500">
-          {exercise.equipment}
-        </div>
-      </button>
-    </div>
-  );
+          <div className="mt-0.5 text-xs text-zinc-500">
+            {exercise.equipment}
+          </div>
+        </button>
+      </div>
+    );
+  };
+
+  const showingSearchResults =
+    searchTerm.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 bg-zinc-950 text-white">
-      <div className="flex min-h-dvh flex-col pt-[max(env(safe-area-inset-top),16px)]">
-        <div className="border-b border-zinc-800 px-4 pb-4">
+      <div className="flex min-h-dvh flex-col pt-[max(env(safe-area-inset-top),12px)]">
+
+        {/* HEADER */}
+        <div className="border-b border-zinc-800 px-4 pb-3">
+
           <div className="flex items-center justify-between">
+
             <div>
-              <div className="text-xs uppercase tracking-wider text-blue-400">
+              <div className="text-[11px] font-semibold uppercase tracking-widest text-blue-400">
                 Exercise Library
               </div>
 
-              <h2 className="mt-1 text-2xl font-bold">
+              <h2 className="mt-0.5 text-2xl font-bold">
                 Add Exercise
               </h2>
+
+              <p className="mt-0.5 text-xs text-zinc-500">
+                {exerciseLibrary.length} exercises
+              </p>
             </div>
 
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               aria-label="Close exercise picker"
               className="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-800 active:scale-95"
             >
               <X size={20} />
             </button>
+
           </div>
 
-          <div className="relative mt-4">
+          {/* SEARCH */}
+          <div className="relative mt-3">
+
             <Search
               size={19}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
@@ -191,61 +241,166 @@ export default function ExercisePicker({
                 setSearch(e.target.value)
               }
               placeholder="Search exercises..."
-              className="h-12 w-full rounded-xl border border-zinc-800 bg-zinc-900 pl-11 pr-4 outline-none focus:border-blue-500"
+              className={[
+                "h-12 w-full",
+                "rounded-xl",
+                "border border-zinc-800",
+                "bg-zinc-900",
+                "pl-11 pr-4",
+                "text-base",
+                "outline-none",
+                "focus:border-blue-500",
+              ].join(" ")}
             />
+
           </div>
-        </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-[max(env(safe-area-inset-bottom),24px)] pt-5">
-          {favoriteItems.length > 0 && (
-            <section className="mb-7">
-              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-yellow-400">
-                <Star size={16} className="fill-yellow-400" />
-                Favorites
-              </div>
+          {/* MUSCLE FILTERS */}
+          {!showingSearchResults && (
+            <div className="mt-3 -mx-4 overflow-x-auto px-4 scrollbar-none">
+              <div className="flex w-max gap-2 pb-1">
 
-              <div className="space-y-2">
-                {favoriteItems.map(
-                  renderExercise,
-                )}
-              </div>
-            </section>
-          )}
+                {muscleGroups.map(group => {
+                  const active =
+                    selectedGroup === group;
 
-          {Object.entries(grouped).map(
-            ([group, exercises]) => (
-              <section
-                key={group}
-                className="mb-7"
-              >
-                <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-zinc-200">
-                  <span>
-                    {muscleIcons[group] ??
-                      "•"}
-                  </span>
-                  <span>{group}</span>
-                </div>
+                  return (
+                    <button
+                      key={group}
+                      type="button"
+                      onClick={() =>
+                        setSelectedGroup(group)
+                      }
+                      className={[
+                        "h-9 rounded-full px-4",
+                        "text-xs font-semibold",
+                        "whitespace-nowrap",
+                        "transition",
+                        active
+                          ? "bg-blue-600 text-white"
+                          : "bg-zinc-900 text-zinc-400",
+                      ].join(" ")}
+                    >
+                      {group}
+                    </button>
+                  );
+                })}
 
-                <div className="space-y-2">
-                  {exercises.map(
-                    renderExercise,
-                  )}
-                </div>
-              </section>
-            ),
-          )}
-
-          {filtered.length === 0 && (
-            <div className="py-16 text-center">
-              <div className="text-lg font-semibold">
-                No exercises found
-              </div>
-
-              <div className="mt-1 text-sm text-zinc-500">
-                Try a different search.
               </div>
             </div>
           )}
+
+        </div>
+
+        {/* CONTENT */}
+        <div className="flex-1 overflow-y-auto px-4 pb-[max(env(safe-area-inset-bottom),24px)] pt-4">
+
+          {/* SEARCH RESULTS */}
+          {showingSearchResults ? (
+            <>
+              <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                {filtered.length} result
+                {filtered.length !== 1
+                  ? "s"
+                  : ""}
+              </div>
+
+              {filtered.length > 0 ? (
+                <div className="space-y-2">
+                  {filtered.map(
+                    renderExercise,
+                  )}
+                </div>
+              ) : (
+                <div className="py-16 text-center">
+                  <Search
+                    size={30}
+                    className="mx-auto text-zinc-700"
+                  />
+
+                  <div className="mt-3 text-base font-semibold">
+                    No exercises found
+                  </div>
+
+                  <div className="mt-1 text-sm text-zinc-500">
+                    Try another exercise name,
+                    muscle group, or equipment.
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* FAVORITES */}
+              {favoriteItems.length > 0 && (
+                <section className="mb-6">
+
+                  <div className="mb-2 flex items-center justify-between">
+
+                    <div className="flex items-center gap-2 text-sm font-semibold text-yellow-400">
+                      <Star
+                        size={15}
+                        className="fill-yellow-400"
+                      />
+                      Favorites
+                    </div>
+
+                    <span className="text-xs text-zinc-600">
+                      {favoriteItems.length}
+                    </span>
+
+                  </div>
+
+                  <div className="space-y-2">
+                    {favoriteItems.map(
+                      renderExercise,
+                    )}
+                  </div>
+
+                </section>
+              )}
+
+              {/* GROUPS */}
+              {Object.entries(grouped).map(
+                ([group, exercises]) => (
+                  <section
+                    key={group}
+                    className="mb-6"
+                  >
+
+                    <div className="mb-2 flex items-center justify-between">
+
+                      <div className="flex items-center gap-2">
+
+                        <span className="text-base">
+                          {muscleIcons[group] ??
+                            "•"}
+                        </span>
+
+                        <span className="text-sm font-semibold">
+                          {group}
+                        </span>
+
+                      </div>
+
+                      <span className="text-xs text-zinc-600">
+                        {exercises.length}
+                      </span>
+
+                    </div>
+
+                    <div className="space-y-2">
+                      {exercises.map(
+                        renderExercise,
+                      )}
+                    </div>
+
+                  </section>
+                ),
+              )}
+            </>
+          )}
+
         </div>
       </div>
     </div>
