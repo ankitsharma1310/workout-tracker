@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Page from "../components/layout/Page";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+import BodyweightSummary from "../components/bodyweight/BodyweightSummary";
 
 import { useWorkoutStore } from "../store/workoutStore";
 import { getCurrentWorkout } from "../utils/currentWorkout";
@@ -122,6 +123,10 @@ export default function HomePage() {
         </div>
 
         <div className="mt-8">
+          <BodyweightSummary />
+        </div>
+
+        <div className="mt-6">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               Recent Workouts

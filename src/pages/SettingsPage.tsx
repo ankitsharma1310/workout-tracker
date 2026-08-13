@@ -29,6 +29,43 @@ export default function SettingsPage() {
           <div className="border-b border-zinc-800 p-4">
             <label className="block">
               <span className="text-sm font-medium">
+                Height
+              </span>
+
+              <div className="relative mt-3">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  value={
+                    settings.heightCm > 0
+                      ? settings.heightCm
+                      : ""
+                  }
+                  placeholder="Height in cm"
+                  onFocus={e =>
+                    e.currentTarget.select()
+                  }
+                  onChange={e =>
+                    update({
+                      heightCm:
+                        Number(
+                          e.target.value,
+                        ) || 0,
+                    })
+                  }
+                  className="h-12 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 pr-14 outline-none focus:border-blue-500"
+                />
+
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-500">
+                  cm
+                </span>
+              </div>
+            </label>
+          </div>
+
+          <div className="border-b border-zinc-800 p-4">
+            <label className="block">
+              <span className="text-sm font-medium">
                 Default Rest Timer
               </span>
 

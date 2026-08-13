@@ -34,7 +34,7 @@ export default function ConfirmDialog({
           {message}
         </p>
         <div className="mt-5 flex gap-3">
-          <Button variant="secondary" onClick={onCancel}>
+          <Button className="bg-zinc-700 hover:bg-zinc-600" onClick={onCancel}>
             Start New
           </Button>
           <Button onClick={onConfirm}>

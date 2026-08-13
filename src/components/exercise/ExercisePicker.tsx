@@ -5,7 +5,6 @@ import {
   X,
 } from "lucide-react";
 
-import type { Exercise } from "../../types/workout";
 import { exerciseLibrary } from "../../data/exercises";
 import { useFavoriteExerciseStore } from "../../store/favoriteExerciseStore";
 import { muscleIcons } from "../../utils/muscleIcons";
@@ -13,7 +12,7 @@ import { muscleIcons } from "../../utils/muscleIcons";
 type Props = {
   open: boolean;
   onClose(): void;
-  onSelect(exercise: Exercise): void;
+  onSelect(exercise: import("../../types/workout").Exercise): void;
 };
 
 const muscleGroups = [

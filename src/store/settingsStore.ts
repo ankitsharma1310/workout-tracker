@@ -9,28 +9,23 @@ import {
 
 type Store = {
   settings: Settings;
-
   update(
     values: Partial<Settings>,
   ): void;
 };
 
 export const useSettingsStore =
-create<Store>((set, get) => ({
+  create<Store>((set, get) => ({
+    settings: getSettings(),
 
-  settings: getSettings(),
+    update(values) {
+      const settings = {
+        ...get().settings,
+        ...values,
+      };
 
-  update(values) {
+      saveSettings(settings);
 
-    const settings = {
-      ...get().settings,
-      ...values,
-    };
-
-    saveSettings(settings);
-
-    set({ settings });
-
-  },
-
-}));
+      set({ settings });
+    },
+  }));

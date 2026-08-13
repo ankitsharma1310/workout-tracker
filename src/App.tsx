@@ -6,6 +6,7 @@ import HistoryPage from "./pages/HistoryPage";
 import WorkoutDetailPage from "./pages/WorkoutDetailPage";
 import WorkoutCompletePage from "./pages/WorkoutCompletePage";
 import SettingsPage from "./pages/SettingsPage";
+import BodyweightPage from "./pages/BodyweightPage";
 
 export default function App() {
   return (
@@ -36,6 +37,11 @@ export default function App() {
         <Route
           path="/history/:id"
           element={<WorkoutDetailPage />}
+        />
+
+        <Route
+          path="/bodyweight"
+          element={<BodyweightPage />}
         />
 
         <Route
