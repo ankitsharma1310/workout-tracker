@@ -122,6 +122,8 @@ export default function WorkoutPage() {
 
           <Input
             value={workout.name}
+            placeholder="Workout name"
+            onFocus={e => e.target.select()}
             onChange={e =>
               setWorkoutName(
                 e.target.value,

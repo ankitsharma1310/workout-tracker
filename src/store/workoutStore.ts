@@ -15,7 +15,7 @@ import {
 
 const createWorkout = (): Workout => ({
   id: crypto.randomUUID(),
-  name: "New Workout",
+  name: "",
   startedAt: Date.now(),
   finishedAt: null,
   exercises: [],

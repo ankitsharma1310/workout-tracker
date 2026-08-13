@@ -179,7 +179,7 @@ export default function ExerciseCard({
         </div>
       </div>
 
-      <div className="mb-1 grid grid-cols-[40px_minmax(0,1fr)_minmax(0,1fr)_44px_44px] items-center gap-2 px-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+      <div className="mb-1 grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_44px] items-center gap-2 px-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
         <div>Set</div>
         <div className="text-center">
           {settings.weightUnit}
@@ -187,7 +187,6 @@ export default function ExerciseCard({
         <div className="text-center">
           Reps
         </div>
-        <div />
         <div />
       </div>
 
