@@ -116,7 +116,7 @@ export default function ExerciseCard({
   return (
     <Card
       className={[
-        "p-4",
+        "p-3.5",
         exerciseCompleted
           ? "border border-green-500/70"
           : "",
@@ -131,7 +131,7 @@ export default function ExerciseCard({
               </span>
             )}
 
-            <h2 className="truncate text-lg font-semibold">
+            <h2 className="truncate text-[17px] font-semibold">
               {exercise.name}
             </h2>
           </div>
@@ -222,7 +222,7 @@ export default function ExerciseCard({
 
       <Button
         onClick={addSet}
-        className="mt-3 h-11 w-full"
+        className="mt-2 h-10 w-full text-sm"
       >
         <Plus size={17} />
         <span className="ml-2">

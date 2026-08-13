@@ -33,63 +33,74 @@ export default function SetRow({
   const [repsText, setRepsText] =
     useState(reps > 0 ? String(reps) : "");
 
-  useEffect(() => {
-    setWeightText(
-      weight > 0 ? String(weight) : "",
-    );
-  }, [weight]);
+  const [editingWeight, setEditingWeight] =
+    useState(false);
+
+  const [editingReps, setEditingReps] =
+    useState(false);
 
   useEffect(() => {
-    setRepsText(
-      reps > 0 ? String(reps) : "",
-    );
-  }, [reps]);
-
-  function handleWeightChange(value: string) {
-    setWeightText(value);
-
-    if (value === "") {
-      onWeightChange(0);
-      return;
+    if (!editingWeight) {
+      setWeightText(
+        weight > 0 ? String(weight) : "",
+      );
     }
+  }, [weight, editingWeight]);
 
-    const parsed = Number(value);
-
-    if (!Number.isNaN(parsed)) {
-      onWeightChange(parsed);
+  useEffect(() => {
+    if (!editingReps) {
+      setRepsText(
+        reps > 0 ? String(reps) : "",
+      );
     }
+  }, [reps, editingReps]);
+
+  function startWeightEditing() {
+    setEditingWeight(true);
+    setWeightText("");
   }
 
-  function handleRepsChange(value: string) {
-    setRepsText(value);
+  function startRepsEditing() {
+    setEditingReps(true);
+    setRepsText("");
+  }
 
-    if (value === "") {
-      onRepsChange(0);
-      return;
-    }
+  function finishWeightEditing() {
+    setEditingWeight(false);
 
-    const parsed = Number(value);
+    const value = Number(weightText);
 
-    if (!Number.isNaN(parsed)) {
-      onRepsChange(parsed);
-    }
+    onWeightChange(
+      weightText === "" || Number.isNaN(value)
+        ? 0
+        : value,
+    );
+  }
+
+  function finishRepsEditing() {
+    setEditingReps(false);
+
+    const value = Number(repsText);
+
+    onRepsChange(
+      repsText === "" || Number.isNaN(value)
+        ? 0
+        : value,
+    );
   }
 
   return (
     <div
       className={[
-        "mb-2",
-        "grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_44px]",
+        "mb-2 grid",
+        "grid-cols-[34px_minmax(0,1fr)_minmax(0,1fr)_44px]",
         "items-center gap-2",
-        "rounded-xl",
-        completed
-          ? "opacity-60"
-          : "",
+        completed ? "opacity-60" : "",
       ].join(" ")}
     >
       <div
         className={[
-          "flex h-12 w-8 items-center justify-center",
+          "flex h-12 w-[34px] items-center justify-center",
           "rounded-xl text-sm font-semibold",
           completed
             ? "bg-green-600 text-white"
@@ -105,12 +116,11 @@ export default function SetRow({
           inputMode="decimal"
           enterKeyHint="next"
           value={weightText}
-          placeholder="kg"
-          onFocus={e => e.target.select()}
+          placeholder="Weight"
+          onFocus={startWeightEditing}
+          onBlur={finishWeightEditing}
           onChange={e =>
-            handleWeightChange(
-              e.target.value,
-            )
+            setWeightText(e.target.value)
           }
           className="h-12 w-full min-w-0 rounded-xl border border-zinc-700 bg-zinc-800 px-3 pr-10 text-center text-base font-semibold outline-none focus:border-blue-500"
         />
@@ -127,13 +137,12 @@ export default function SetRow({
           enterKeyHint="done"
           value={repsText}
           placeholder="Reps"
-          onFocus={e => e.target.select()}
+          onFocus={startRepsEditing}
+          onBlur={finishRepsEditing}
           onChange={e =>
-            handleRepsChange(
-              e.target.value,
-            )
+            setRepsText(e.target.value)
           }
-          className="h-12 w-full min-w-0 rounded-xl border border-zinc-700 bg-zinc-800 px-3 pr-12 text-center text-base font-semibold outline-none focus:border-blue-500"
+          className="h-12 w-full min-w-0 rounded-xl border border-zinc-700 bg-zinc-800 px-3 pr-10 text-center text-base font-semibold outline-none focus:border-blue-500"
         />
 
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">
@@ -154,7 +163,7 @@ export default function SetRow({
           "rounded-xl transition active:scale-95",
           completed
             ? "bg-green-600"
-            : "bg-zinc-800",
+            : "bg-zinc-800 active:bg-green-600",
         ].join(" ")}
       >
         <Check size={19} />
@@ -164,10 +173,10 @@ export default function SetRow({
         type="button"
         onClick={onDelete}
         aria-label="Delete set"
-        className="col-start-2 flex h-9 w-full items-center justify-center gap-2 rounded-lg text-xs text-zinc-500 active:bg-zinc-800 active:text-red-400"
+        className="col-start-2 flex h-7 items-center justify-center gap-1 text-[11px] text-zinc-600 active:text-red-400"
       >
-        <Trash2 size={14} />
-        Delete set
+        <Trash2 size={13} />
+        Delete
       </button>
     </div>
   );

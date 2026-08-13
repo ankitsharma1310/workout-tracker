@@ -108,7 +108,7 @@ export default function WorkoutPage() {
             </div>
 
             <Button
-              className="w-auto px-5"
+              className="h-11 w-auto px-5 text-sm"
               onClick={finish}
             >
               Finish
@@ -123,7 +123,9 @@ export default function WorkoutPage() {
           <Input
             value={workout.name}
             placeholder="Workout name"
-            onFocus={e => e.target.select()}
+            onFocus={e => {
+              e.currentTarget.select();
+            }}
             onChange={e =>
               setWorkoutName(
                 e.target.value,
@@ -168,11 +170,12 @@ export default function WorkoutPage() {
         onSelect={addSelectedExercise}
       />
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-950/95 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-800/80 bg-zinc-950/95 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),8px)] backdrop-blur-xl">
 
-        <div className="mx-auto max-w-md px-4 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">
+        <div className="mx-auto w-full max-w-md">
 
           <Button
+            className="h-12 w-full text-sm"
             onClick={() => setPickerOpen(true)}
           >
             <Plus size={18}/>
