@@ -135,6 +135,20 @@ export default function SettingsPage() {
             />
           </label>
         </div>
+
+        <div className="mt-8 border-t border-zinc-800 pt-6 text-center">
+          <div className="text-sm font-semibold">
+            Workout Tracker
+          </div>
+
+          <div className="mt-1 text-xs text-zinc-500">
+            Built by Ankit Sharma
+          </div>
+
+          <div className="mt-1 text-xs text-zinc-600">
+            Version 1.0.0
+          </div>
+        </div>
       </div>
     </Page>
   );

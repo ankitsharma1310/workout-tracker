@@ -221,6 +221,16 @@ export default function HomePage() {
             </div>
           </Card>
         </div>
+
+        <div className="mt-10 pb-2 text-center">
+          <p className="text-xs text-zinc-600">
+            Workout Tracker
+          </p>
+
+          <p className="mt-1 text-xs text-zinc-700">
+            Built by Ankit Sharma · v1.0.0
+          </p>
+        </div>
       </div>
     </Page>
   );
