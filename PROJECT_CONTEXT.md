@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v1.0.0
+v2.0.0
 
 ## Purpose
 
@@ -12,18 +12,7 @@ Also works as an installable PWA on Android.
 
 ## Core philosophy
 
-Keep the app simple and fast.
-Do NOT add feature bloat.
-Prioritize:
-
-- Fast workout logging
-- Searchable exercise library
-- Weight/reps entry
-- Previous performance
-- Rest timer
-- History
-- Bodyweight tracking
-- Mobile UX
+Keep the app simple and fast. Do NOT add feature bloat. Prioritize fast workout logging, exercise library, sets/weight/reps, previous performance, rest timer, history, body tracking, and mobile UX.
 
 ## Current stack
 
@@ -36,101 +25,53 @@ Prioritize:
 - Vite PWA
 - Vercel
 
-## Deployment
-
-Production is deployed through Vercel.
-GitHub repository:
-https://github.com/ankitsharma1310/workout-tracker.git
-
-Production branch:
-main
-
 ## Current app sections
 
 - Home
 - Workout
 - History
 - Workout Detail
-- Bodyweight
+- Body
 - Settings
 
 ## Workout functionality
 
-- Start workout
-- Resume unfinished workout
-- Add exercises
-- Search exercise library
-- Favorites
-- Muscle-group filtering
-- Log weight
-- Log reps
-- Complete sets
-- Delete sets
-- Delete exercises
+- Start/resume workout
+- Add/search exercises
+- Favorites and muscle-group filtering
+- Log weight/reps and complete sets
+- Delete sets/exercises
 - Automatic current-workout persistence
-- Previous performance display
+- Previous performance
 - Repeat previous workout
 - Rest timer
 - Workout completion summary
+- Automatic exercise collapse so the active exercise stays open while other exercises collapse
 
-## Bodyweight
+## History and export
+
+- Completed workout history
+- Delete individual workouts with confirmation
+- Workout detail view
+- Print-friendly full workout export through the browser PDF/print flow
+- PDF includes workout name/date, duration, exercise list, sets, weight, reps, completion status, notes, and volume
+
+## Body
 
 - Daily bodyweight logging
 - One entry per day
 - 7-day average
-- Height setting
-- kg/lb conversion
-- Recent entries
+- Height stored in the Body section rather than Settings
+- Optional dated body measurements
+- Common measurements: chest, biceps, forearms, waist, shoulders, thighs, calves, neck, hips
+- cm/in measurement entry and display
+- Recent bodyweight entries
 
-## Mobile UI
+## Settings
 
-The application is designed primarily for iPhone.
-Important UX principles:
-
-- Large touch targets
-- Safe-area support
-- Compact workout screen
-- Numeric keyboard for weight/reps
-- Sticky workout controls
-- Full-screen exercise picker
-- Bottom navigation
-
-## Exercise library
-
-Approximately 100 exercises across:
-
-- Chest
-- Back
-- Shoulders
-- Biceps
-- Triceps
-- Forearms
-- Legs
-- Glutes
-- Core
-- Cardio
-
-## Important architecture
-
-Exercise library items are templates:
-
-- name
-- muscleGroup
-- equipment
-
-Actual workout exercises contain:
-
-- id
-- name
-- muscleGroup
-- sets
-
-Workout sets contain:
-
-- id
-- weight
-- reps
-- completed
+- Default rest timer
+- Weight unit
+- Auto-start rest timer
 
 ## Persistence
 
@@ -141,38 +82,22 @@ localStorage is used for:
 - settings
 - favorites
 - bodyweight
+- body profile and measurements
 
-## Version 1.0 status
+Existing height stored in the old settings record is automatically migrated into the new Body profile when Body is opened.
 
-The app is considered feature-complete for personal use.
-Future development should focus on real-world usability and polishing rather than adding lots of new features.
+## Mobile UI
 
-## Version 2.0
-
-Not started yet.
-Build from the existing v1.0 architecture.
-Do not assume features that are not listed above exist.
-
-## Developer
-
-Built by Ankit Sharma.
+The application is designed primarily for iPhone with large touch targets, safe-area support, compact workout screen, numeric keyboard for weight/reps, sticky workout controls, full-screen exercise picker, and bottom navigation.
 
 ## Development workflow
 
-Build:
-`npm run build`
-
-Production changes:
-`git add .`
-`git commit -m "..."`
-`git push origin main`
-
-Vercel automatically deploys main.
+Build: `npm run build`
+Production changes are deployed from `main` through Vercel.
 
 ## Important instruction for future AI
 
 Before modifying code:
-
 1. Inspect the relevant existing file.
 2. Do not guess the current architecture.
 3. Prefer complete safe replacements for complex JSX rather than fragile regex edits.
