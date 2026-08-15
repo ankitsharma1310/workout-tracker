@@ -19,16 +19,22 @@ export default defineConfig({
 
       manifest: {
         id: "/",
-        name: "Workout Tracker",
-        short_name: "Workout",
-        description:
-          "Personal workout tracker",
+        name: "Shield Bear",
+        short_name: "Shield Bear",
+        description: "Personal workout tracker",
         theme_color: "#09090b",
         background_color: "#09090b",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
         scope: "/",
+        icons: [
+          {
+            src: "/icons/shield-bear-512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
       },
     }),
   ],
