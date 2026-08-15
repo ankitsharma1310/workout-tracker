@@ -192,10 +192,10 @@ export default function ExercisePicker({
 
   return (
     <div className="fixed inset-0 z-50 bg-zinc-950 text-white">
-      <div className="flex min-h-dvh flex-col pt-[max(env(safe-area-inset-top),12px)]">
+      <div className="flex h-dvh min-h-0 flex-col pt-[max(env(safe-area-inset-top),12px)]">
 
         {/* HEADER */}
-        <div className="border-b border-zinc-800 px-4 pb-3">
+        <div className="shrink-0 border-b border-zinc-800 px-4 pb-3">
 
           <div className="flex items-center justify-between">
 
@@ -292,7 +292,7 @@ export default function ExercisePicker({
         </div>
 
         {/* CONTENT */}
-        <div className="flex-1 overflow-y-auto px-4 pb-[max(env(safe-area-inset-bottom),24px)] pt-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y px-4 pb-[max(env(safe-area-inset-bottom),24px)] pt-4">
 
           {/* SEARCH RESULTS */}
           {showingSearchResults ? (
