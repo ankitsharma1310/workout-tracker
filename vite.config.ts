@@ -7,16 +7,13 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-
     VitePWA({
       registerType: "autoUpdate",
-
       workbox: {
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
       },
-
       manifest: {
         id: "/",
         name: "Shield Bear",
@@ -30,9 +27,10 @@ export default defineConfig({
         scope: "/",
         icons: [
           {
-            src: "/icons/shield-bear-512.png",
-            sizes: "512x512",
+            src: "/icons/shield-bear-v2-512.png",
+            sizes: "1024x1024",
             type: "image/png",
+            purpose: "any maskable",
           },
         ],
       },
