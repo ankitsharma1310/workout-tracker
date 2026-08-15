@@ -3,6 +3,7 @@ export interface WorkoutSet {
   weight: number;
   reps: number;
   completed: boolean;
+  amrap?: boolean;
 }
 
 export interface Exercise {
