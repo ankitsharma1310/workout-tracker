@@ -53,14 +53,11 @@ export default function ExerciseCard({ exercise, onChange, onDelete, collapsed =
             {previous && previous.sets.length > 0 && <><span>•</span><span>Last • {previous.sets[0].weight} kg × {previous.sets[0].reps}</span></>}
           </div>
         </button>
-        <div className="flex shrink-0 items-center gap-2">
-          <Badge className="px-2 py-1 text-xs">{completedSets}/{exercise.sets.length}</Badge>
-          <button type="button" onClick={onDelete} aria-label={`Delete ${exercise.name}`} className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 text-red-400 active:scale-95"><Trash2 size={18} /></button>
-        </div>
+        <div className="flex shrink-0 items-center gap-2"><Badge className="px-2 py-1 text-xs">{completedSets}/{exercise.sets.length}</Badge><button type="button" onClick={onDelete} aria-label={`Delete ${exercise.name}`} className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 text-red-400 active:scale-95"><Trash2 size={18} /></button></div>
       </div>
       {!collapsed && <>
         <div className="mb-1 mt-3 grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_44px] items-center gap-2 px-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500"><div>Set</div><div className="text-center">{settings.weightUnit}</div><div className="text-center">Reps</div><div /></div>
-        <div>{exercise.sets.map((set, index) => <SetRow key={set.id} setNumber={index + 1} weight={set.weight} reps={set.reps} completed={set.completed} onWeightChange={v => updateSet(index, { weight: v })} onRepsChange={v => updateSet(index, { reps: v })} onComplete={() => completeSet(index)} onDelete={() => deleteSet(index)} />)}</div>
+        <div>{exercise.sets.map((set, index) => <SetRow key={set.id} setNumber={index + 1} weight={set.weight} reps={set.reps} completed={set.completed} amrap={set.amrap} onWeightChange={v => updateSet(index, { weight: v })} onRepsChange={v => updateSet(index, { reps: v })} onComplete={() => completeSet(index)} onDelete={() => deleteSet(index)} />)}</div>
         <Button onClick={addSet} className="mt-2 h-10 w-full text-sm"><Plus size={17} /><span className="ml-2">Add Set</span></Button>
       </>}
     </Card>
