@@ -24,14 +24,8 @@ const reps: Record<FiveThreeOneWeek, [number, number, number]> = {
   4: [5, 5, 5],
 };
 
-function makeSet(weight: number, targetReps: number, amrap: boolean): WorkoutSet {
-  return {
-    id: crypto.randomUUID(),
-    weight: roundToPlate(weight),
-    reps: targetReps,
-    completed: false,
-    ...(amrap ? { targetLabel: `${targetReps}+` } : {}),
-  } as WorkoutSet;
+function makeSet(weight: number, targetReps: number, amrap = false): WorkoutSet {
+  return { id: crypto.randomUUID(), weight: roundToPlate(weight), reps: targetReps, completed: false, amrap };
 }
 
 function getLiftForDay(name: string) {
@@ -45,39 +39,28 @@ export function canGenerateFiveThreeOne() {
 export function generateFiveThreeOneWorkout(week: FiveThreeOneWeek, dayIndex: number): Workout | null {
   const day = days[dayIndex];
   if (!day) return null;
-
   const lift = getLiftForDay(day.name);
   if (!lift) return null;
 
   const tm = getTrainingMax(lift.estimatedOneRepMaxKg);
   const pct = percentages[week];
   const repTargets = reps[week];
-  const sets: WorkoutSet[] = pct.map((percentage, index) =>
-    makeSet(tm * percentage, repTargets[index], week !== 4 && index === 2),
-  );
+  const sets: WorkoutSet[] = pct.map((percentage, index) => makeSet(tm * percentage, repTargets[index], week !== 4 && index === 2));
 
   if (week !== 4) {
     const bbbWeight = roundToPlate(tm * 0.5);
-    for (let i = 0; i < 5; i += 1) sets.push(makeSet(bbbWeight, 10, false));
+    for (let i = 0; i < 5; i += 1) sets.push(makeSet(bbbWeight, 10));
   }
 
   const exercise: Exercise = {
     id: crypto.randomUUID(),
     name: day.name,
     muscleGroup: day.muscleGroup,
-    notes: week === 4
-      ? "5/3/1 deload week. No AMRAP."
-      : "5/3/1 main work + Boring But Big 5x10.",
+    notes: week === 4 ? "5/3/1 deload week. No AMRAP." : "5/3/1 main work + Boring But Big 5x10.",
     sets,
   };
 
-  return {
-    id: crypto.randomUUID(),
-    name: `5/3/1 — Week ${week} — ${day.name}`,
-    startedAt: Date.now(),
-    finishedAt: null,
-    exercises: [exercise],
-  };
+  return { id: crypto.randomUUID(), name: `5/3/1 — Week ${week} — ${day.name}`, startedAt: Date.now(), finishedAt: null, exercises: [exercise] };
 }
 
 export function getFiveThreeOneDays() {
