@@ -28,9 +28,9 @@ export default defineConfig({
         icons: [
           {
             src: "/icons/shield-bear-v2-512.png",
-            sizes: "1024x1024",
+            sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "any",
           },
         ],
       },
