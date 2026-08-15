@@ -6,16 +6,12 @@ const defaults: Settings = {
   defaultRestTimer: 90,
   weightUnit: "kg",
   autoStartRestTimer: true,
-  heightCm: 0,
 };
 
 export function getSettings(): Settings {
-  const data =
-    localStorage.getItem(KEY);
+  const data = localStorage.getItem(KEY);
 
-  if (!data) {
-    return defaults;
-  }
+  if (!data) return defaults;
 
   try {
     return {
@@ -27,11 +23,6 @@ export function getSettings(): Settings {
   }
 }
 
-export function saveSettings(
-  settings: Settings,
-) {
-  localStorage.setItem(
-    KEY,
-    JSON.stringify(settings),
-  );
+export function saveSettings(settings: Settings) {
+  localStorage.setItem(KEY, JSON.stringify(settings));
 }
