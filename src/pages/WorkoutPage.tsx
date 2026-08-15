@@ -47,10 +47,6 @@ export default function WorkoutPage() {
     setActiveExerciseId(current => current === id ? null : id);
   }
 
-  function activateExercise(id: string) {
-    setActiveExerciseId(id);
-  }
-
   return (
     <Page>
       <div className="pb-24">
@@ -63,15 +59,15 @@ export default function WorkoutPage() {
         </Card>
         <div className="mt-5"><RestTimer /></div>
         <div className="mt-5 space-y-5">
-          {workout.exercises.map((exercise, index) => (
+          {workout.exercises.map(exercise => (
             <ExerciseCard
               key={exercise.id}
               exercise={exercise}
               onChange={updateExercise}
               onDelete={() => removeExercise(exercise.id)}
-              collapsed={activeExerciseId !== null ? activeExerciseId !== exercise.id : false}
+              collapsed={activeExerciseId !== null && activeExerciseId !== exercise.id}
               onToggle={() => toggleExercise(exercise.id)}
-              onAddSet={() => activateExercise(exercise.id)}
+              onAddSet={() => setActiveExerciseId(exercise.id)}
             />
           ))}
         </div>
