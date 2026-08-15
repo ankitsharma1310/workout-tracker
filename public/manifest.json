@@ -1,6 +1,6 @@
 {
-  "name": "Shield Bear",
-  "short_name": "Shield Bear",
+  "name": "Workout Tracker",
+  "short_name": "Workout Tracker",
   "description": "Personal workout tracker",
   "start_url": "/",
   "scope": "/",
@@ -10,9 +10,9 @@
   "theme_color": "#09090b",
   "icons": [
     {
-      "src": "/icons/shield-bear-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ]
