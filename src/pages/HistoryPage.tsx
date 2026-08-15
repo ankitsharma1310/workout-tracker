@@ -1,109 +1,48 @@
-import { useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { Trash2 } from "lucide-react";
 import Page from "../components/layout/Page";
 import Card from "../components/ui/Card";
-
-import { getWorkoutHistory } from "../utils/storage";
+import { getWorkoutHistory, deleteWorkout } from "../utils/storage";
 import { getWorkoutVolume } from "../utils/volume";
 
-function formatDuration(
-  startedAt: number,
-  finishedAt: number | null,
-) {
+function formatDuration(startedAt: number, finishedAt: number | null) {
   if (!finishedAt) return "In progress";
-
-  const minutes = Math.floor(
-    Math.max(
-      0,
-      finishedAt - startedAt,
-    ) / 60000,
-  );
-
-  if (minutes < 60) {
-    return `${minutes} min`;
-  }
-
+  const minutes = Math.floor(Math.max(0, finishedAt - startedAt) / 60000);
+  if (minutes < 60) return `${minutes} min`;
   const hours = Math.floor(minutes / 60);
   const remaining = minutes % 60;
-
-  return remaining
-    ? `${hours}h ${remaining}m`
-    : `${hours}h`;
+  return remaining ? `${hours}h ${remaining}m` : `${hours}h`;
 }
 
 export default function HistoryPage() {
   const navigate = useNavigate();
+  const [workouts, setWorkouts] = useState(() => getWorkoutHistory());
 
-  const workouts = useMemo(
-    () => getWorkoutHistory(),
-    [],
-  );
+  function removeWorkout(id: string, name: string) {
+    if (!window.confirm(`Delete "${name || "Untitled Workout"}" from history?`)) return;
+    deleteWorkout(id);
+    setWorkouts(getWorkoutHistory());
+  }
 
   return (
     <Page>
-      <div className="pt-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          History
-        </h1>
-
-        <p className="mt-1 text-sm text-zinc-500">
-          Your completed workouts
-        </p>
-
+      <div className="pt-2 pb-24">
+        <h1 className="text-3xl font-bold tracking-tight">History</h1>
+        <p className="mt-1 text-sm text-zinc-500">Your completed workouts</p>
         <div className="mt-6 space-y-3">
-          {workouts.length === 0 ? (
-            <Card className="p-5">
-              <p className="text-sm text-zinc-500">
-                No workouts yet.
-              </p>
+          {workouts.length === 0 ? <Card className="p-5"><p className="text-sm text-zinc-500">No workouts yet.</p></Card> : workouts.map(workout => (
+            <Card key={workout.id} className="p-4">
+              <div className="flex items-center gap-3">
+                <button onClick={() => navigate(`/history/${workout.id}`)} className="min-w-0 flex-1 text-left active:scale-[0.99]">
+                  <div className="truncate font-semibold">{workout.name || "Untitled Workout"}</div>
+                  <div className="mt-1 text-xs text-zinc-500">{new Date(workout.finishedAt ?? workout.startedAt).toLocaleDateString()} • {workout.exercises.length} exercises • {formatDuration(workout.startedAt, workout.finishedAt)}</div>
+                </button>
+                <div className="shrink-0 text-right"><div className="font-semibold">{getWorkoutVolume(workout.exercises).toLocaleString()}</div><div className="text-xs font-normal text-zinc-500">kg</div></div>
+                <button type="button" onClick={() => removeWorkout(workout.id, workout.name)} aria-label={`Delete ${workout.name || "workout"}`} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-800 text-red-400 active:scale-95"><Trash2 size={18} /></button>
+              </div>
             </Card>
-          ) : (
-            workouts.map(workout => (
-              <button
-                key={workout.id}
-                onClick={() =>
-                  navigate(
-                    `/history/${workout.id}`,
-                  )
-                }
-                className="w-full text-left"
-              >
-                <Card className="p-4 transition active:scale-[0.99]">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="truncate font-semibold">
-                        {workout.name}
-                      </div>
-
-                      <div className="mt-1 text-xs text-zinc-500">
-                        {new Date(
-                          workout.finishedAt ??
-                            workout.startedAt,
-                        ).toLocaleDateString()}
-                        {" • "}
-                        {workout.exercises.length} exercises
-                        {" • "}
-                        {formatDuration(
-                          workout.startedAt,
-                          workout.finishedAt,
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="shrink-0 text-right font-semibold">
-                      {getWorkoutVolume(
-                        workout.exercises,
-                      ).toLocaleString()}
-                      <div className="text-xs font-normal text-zinc-500">
-                        kg
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </button>
-            ))
-          )}
+          ))}
         </div>
       </div>
     </Page>
